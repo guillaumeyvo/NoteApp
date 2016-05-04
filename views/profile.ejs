@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
+
+     <script type="text/javascript" src="main.js"></script> 
+  
+    <style>
+    body        { padding-top:80px; word-wrap:break-word; }
+       
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">WebSiteName</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/profile">Profile</a></li>
+      <li><a href="/create">Creer une note</a></li>
+      <li><a href="/mynotes">Voir les notes</a></li>
+      <li class="pull-right"><a href="/logout">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="container">
+ 
+
+
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> Profile Page</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+
+    <div class="row">
+
+        <!-- LOCAL INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3><span class="fa fa-user"></span> Local</h3>
+
+                    <p>
+                        <strong>id</strong>: <%= user.id %><br>
+                        <strong>email</strong>: <%= user.email %><br>
+                        <strong>password</strong>: <%= user.password_hash %>
+                    </p>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+                <div class="col-sm-6">
+
+        <h2>Vertical (basic) form</h2>
+  <form role="form" action="/profile" method="post">
+    <div class="form-group">
+      <label for="email">Name of the folder:</label>
+      <input type="text" class="form-control" name="folder" id="fp" placeholder="Enter folder's name">
+    </div>
+    <button type="submit" class="btn btn-warning btn-lg">Login</button>
+
+  </form>
+  <button class="btn btn-warning btn-lg" id="btadd" onclick="myFunction()">Ajax</button>
+    <button class="btn btn-warning btn-lg" id="btadd" onclick="myFunctionAdd()">AjaxAdd</button>
+
+</div>
+<%if (folder!=null) { %>
+        <div class="col-sm-6">
+            <ul class="list-group" id="folderList">
+    <%for(var i=0;i<folder.length;i++){ %>
+    <li class="list-group-item"><%= folder[i].name %></li>
+    <% }%>
+</ul>
+        </div>
+<% } %>
+    </div>
+
+    <div class="row">
+        <textarea name="editor1" id="editor1"></textarea>
+           <script>
+            var ck = CKEDITOR.replace( 'editor1' );
+        </script>
+
+    </div>
+
+    <div class="panel-body">
+    <ul id="mylist" class="list-group">
+        <li id="item1" href="#" class="list-group-item">Item1   <span class="glyphicon glyphicon-search pull-right" aria-hidden="true"></span>
+
+
+        </li>
+        <li id="item2" href="#" class="list-group-item">Item2   <i class="fa fa-remove fa-2x pull-right" style="color: red;"></i>   <span id="badge" class="badge">-10</span>
+
+
+        </li>
+    </ul>
+</div>
+     
+
+</div>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Material Admin - Compose mail</title>
+
+		<!-- BEGIN META -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="keywords" content="your,keywords">
+		<meta name="description" content="Short explanation about this website">
+		<!-- END META -->
+
+		<!-- BEGIN STYLESHEETS -->
+		<link href='http://fonts.googleapis.com/css?family=Roboto:300italic,400italic,300,400,500,700,900' rel='stylesheet' type='text/css'/>
+		<link type="text/css" rel="stylesheet" href="/assets/css/theme-default/bootstrap.css?1422792965" />
+		<link type="text/css" rel="stylesheet" href="/assets/css/theme-default/materialadmin.css?1425466319" />
+		<link type="text/css" rel="stylesheet" href="/assets/css/theme-default/font-awesome.min.css?1422529194" />
+		<link type="text/css" rel="stylesheet" href="/assets/css/theme-default/material-design-iconic-font.min.css?1421434286" />
+		<link type="text/css" rel="stylesheet" href="/assets/css/theme-default/libs/summernote/summernote.css?1425218701" />
+
+		     <script type="text/javascript" src="main.js"></script> 
+		     
+
+
+		<!-- END STYLESHEETS -->
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+		<script type="text/javascript" src="../../assets/js/libs/utils/html5shiv.js?1403934957"></script>
+		<script type="text/javascript" src="../../assets/js/libs/utils/respond.min.js?1403934956"></script>
+		<![endif]-->
+	</head>
+	<body class="menubar-hoverable header-fixed menubar-first full-content ">
+
+		<!-- BEGIN HEADER-->
+		<header id="header" >
+			<div class="headerbar">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="headerbar-left">
+					<ul class="header-nav header-nav-options">
+						<li class="header-nav-brand" >
+							<div class="brand-holder">
+								<a href="../../html/dashboards/dashboard.html">
+									<span class="text-lg text-bold text-primary">NOTEAPP</span>
+								</a>
+							</div>
+						</li>
+						<li>
+							<a class="btn btn-icon-toggle menubar-toggle" data-toggle="menubar" href="javascript:void(0);">
+								<i class="fa fa-bars"></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="headerbar-right">
+					<ul class="header-nav header-nav-options">
+						<!-- <li> -->
+							<!-- Search form -->
+							<!-- <form class="navbar-search" role="search">
+								<div class="form-group">
+									<input type="text" class="form-control" name="headerSearch" placeholder="Enter your keyword">
+								</div>
+								<button onclick="showCanvas()" class="btn btn-icon-toggle ink-reaction"><i class="fa fa-search"></i></button>
+							</form> -->
+						<!-- </li> -->
+						
+						
+					</ul><!--end .header-nav-options -->
+					<ul class="header-nav header-nav-profile">
+						<li class="dropdown">
+							<a href="javascript:void(0);" class="dropdown-toggle ink-reaction" data-toggle="dropdown">
+								<img src="../../assets/img/prof.png" alt="" />
+								<span class="profile-info">
+									<%= email %>
+								</span>
+							</a>
+							<ul class="dropdown-menu animation-dock">
+								<li class="dropdown-header">Config</li>
+								<li><a href="../../html/pages/profile.html">My profile</a></li>
+								<li><a href="../../html/pages/blog/post.html">My blog <span class="badge style-danger pull-right">16</span></a></li>
+								<li><a href="../../html/pages/calendar.html">My appointments</a></li>
+								<li class="divider"></li>
+								<li><a href="../../html/pages/locked.html"><i class="fa fa-fw fa-lock"></i> Lock</a></li>
+								<li><a href="/logout"><i class="fa fa-fw fa-power-off text-danger"></i> Logout</a></li>
+							</ul><!--end .dropdown-menu -->
+						</li><!--end .dropdown -->
+					</ul><!--end .header-nav-profile -->
+					<ul class="header-nav header-nav-toggle">
+						<li>
+							<a class="btn btn-icon-toggle btn-default" href="#offcanvas-search" data-toggle="offcanvas" data-backdrop="false">
+								<i class="fa fa-search"></i>
+							</a>
+						</li>
+					</ul><!--end .header-nav-toggle -->
+				</div><!--end #header-navbar-collapse -->
+			</div>
+		</header>
+		<!-- END HEADER-->
+
+		<!-- BEGIN BASE-->
+		<div id="base">
+
+			<!-- BEGIN OFFCANVAS LEFT -->
+			<div class="offcanvas">
+			</div><!--end .offcanvas-->
+			<!-- END OFFCANVAS LEFT -->
+
+			<!-- BEGIN CONTENT-->
+			<div id="content">
+				<section class="style-default-bright">
+
+					<!-- BEGIN INBOX -->
+					<div class="section-body">
+						<div class="row">
+
+							
+
+							<!-- BEGIN MAIL COMPOSE -->
+							<div class="col-lg-12"> 
+										<div class="input-group-content">
+												<input type="text" class="form-control" id="noteTitle" placeholder="Entrer le type de la note">
+												
+											</div>
+										<!-- <h1 id="noteTitle" class="no-margin">Reaching the top</h1> -->
+										<div class="btn-group stick-top-right">
+											<a class="btn btn-icon-toggle btn-default" onclick="getFolderManageModal()" data-toggle="modal" data-target="#simpleModal"><i class="fa fa-folder" ></i></a>
+											<a class="btn btn-icon-toggle btn-default" onclick="addNewNote()"><i class="md md-add"></i></a>
+											<a id="toastTest" class="btn btn-icon-toggle btn-default" onclick="deleteNote()"><i class="md md-delete"></i></a>
+											<a onclick="updateNote()"  class="btn btn-icon-toggle btn-default"><i class="md md-save"></i></a>
+										</div>
+										<span class="pull-right text-default-light" id="saveMessage"></span>
+										<hr/>
+
+								
+								<form class="form" id="formCompose">
+									
+									<div class="form-group">
+										<!-- <div id="simple-summernote" name="message" class="form-control control-12-rows" spellcheck="false"></div> -->
+
+										<div id="dSummernote"></div>
+									</div><!--end .form-group -->
+								</form>
+							</div><!--end .col -->
+							<!-- END MAIL COMPOSE -->
+
+						</div><!--end .row -->
+					</div><!--end .section-body -->
+					<!-- END INBOX -->
+
+
+				</section>
+			</div><!--end #content-->
+			<!-- END CONTENT -->
+
+			<!-- BEGIN MENUBAR-->
+			<div id="menubar" class="menubar-inverse ">
+				<div class="menubar-fixed-panel">
+					<div>
+						<a class="btn btn-icon-toggle btn-default menubar-toggle" data-toggle="menubar" href="javascript:void(0);">
+							<i class="fa fa-bars"></i>
+						</a>
+					</div>
+					<div class="expanded">
+						<a href="../../html/dashboards/dashboard.html">
+							<span class="text-lg text-bold text-primary ">NOTEAPP</span>
+						</a>
+					</div>
+				</div>
+				<div class="menubar-scroll-panel">
+
+					<!-- BEGIN MAIN MENU -->
+					<ul id="main-menu" class="gui-controls">
+
+            <% for(var i=0; i<data.length; i++) { %>
+						<li class="gui-folder">
+							<a>
+								<div class="gui-icon"><i class="md md-folder"></i></div>
+								<span class="title"><%= data[i].name %></span>
+							</a>
+							<ul>
+								<% for(var j=0; j<data[i]["notes"].length; j++) { %>
+								<% if(i==0 && j==0){ %>
+									   <li><a href="#" id="<%= data[i]["notes"][j].id %>" class="active" onclick="loadNote(this)"><span class="title"><%= data[i]["notes"][j].title %><i style="float: right;" class="md md-delete" onclick="deleteNote(this)"></i></span></a></li>
+									 <% } else{ %>  
+									   <li><a href="#" id="<%= data[i]["notes"][j].id %>" onclick="loadNote(this)"><span class="title"><%= data[i]["notes"][j].title %><i style="float: right;" class="md md-delete" onclick="deleteNote(this,'menu')"></i></span></a></li>
+								<% } %>
+
+								<% } %>
+							</ul>
+						</li>
+            
+
+            <% } %>
+
+					</ul><!--end .main-menu -->
+					<!-- END MAIN MENU -->
+
+					
+				</div><!--end .menubar-scroll-panel-->
+			</div><!--end #menubar-->
+			<!-- END MENUBAR -->
+
+			<!-- BEGIN OFFCANVAS RIGHT -->
+			<div class="offcanvas">
+
+				<!-- BEGIN OFFCANVAS SEARCH -->
+				<div id="offcanvas-search" class="offcanvas-pane width-8">
+					<div class="offcanvas-head">
+						<header class="text-primary">Rechercher dans les notes</header>
+					
+						<div class="offcanvas-tools">
+							<a class="btn btn-icon-toggle btn-default-light pull-right" data-dismiss="offcanvas">
+								<i class="md md-close"></i>
+							</a>
+						</div>
+					</div>
+					<div class="offcanvas-body no-padding">
+						<ul class="list" id="searchResult">
+							<li class="tile divider-full-bleed">
+								<div class="tile-content">
+									<div class="tile-text">	
+										<div class="input-group-content">
+												<form class="form">
+													<div class="form-group">
+														<div class="input-group input-group-md">
+															<div class="input-group-content">
+																<input type="text" class="form-control" id="searchInput" placeholder="Recherche">
+																<div class="form-control-line"></div>
+															</div>
+															<div class="input-group-btn">
+																<!-- <button class="btn btn-floating-action btn-default-bright" type="button"><i class="fa fa-search"></i></button> -->
+																<button onclick="search()" class="btn btn-icon-toggle ink-reaction"><i class="fa fa-search"></i></button>
+
+															</div>
+														</div>
+													</div><!--end .form-group -->
+												</form>
+											</div>
+									</div>
+								</div>
+							</li>
+
+							
+
+
+						</ul>
+					</div><!--end .offcanvas-body -->
+				</div><!--end .offcanvas-pane -->
+				<!-- END OFFCANVAS SEARCH -->
+
+
+			</div><!--end .offcanvas-->
+			<!-- END OFFCANVAS RIGHT -->
+
+		</div><!--end #base-->
+		<!-- END BASE -->
+
+		<div class="modal fade" id="delete-file-modal" role="dialog">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		        	<div class="modal-header">
+			          <button type="button" class="close" data-dismiss="modal">&times;</button>
+			          <h4 class="modal-title">Confirmation</h4>
+			        </div>
+
+		            <form class="form-horizontal" method="post" id="delete_file_form">
+
+
+		                <div class="modal-body">
+
+		                    Voulez-vous vraiment supprimer cette note ? 
+
+		                </div>  
+
+		                <div class="modal-footer">
+
+		                    <button data-dismiss="modal" class="btn btn-danger" name="in_confirm_insert" id="bt_delete">Supprimer</button>
+		                    <button data-dismiss="modal" class="btn btn-default" name="in_confirm_insert" id="bt_cancel">Annuler</button>
+
+		                </div>
+
+		            </form>
+
+		        </div>
+		    </div>
+		</div>
+
+		<div class="modal fade" id="save-file-modal" role="dialog">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		        	<div class="modal-header">
+			          <button type="button" class="close" data-dismiss="modal">&times;</button>
+			          <h4 class="modal-title">Confirmation</h4>
+			        </div>
+
+		            <form class="form-horizontal" method="post" id="delete_file_form">
+
+
+		                <div class="modal-body">
+
+		                    Voulez vous enregistrer la note actuelle ?  
+
+		                </div>  
+
+		                <div class="modal-footer">
+
+		                    
+		                    <button data-dismiss="modal" class="btn btn-danger" name="in_confirm_insert" id="bt_cancel">Non</button>
+		                    <button data-dismiss="modal" class="btn btn-primary" name="in_confirm_insert" id="bt_delete">Oui</button>
+
+		                </div>
+
+		            </form>
+
+		        </div>
+		    </div>
+		</div>
+
+
+		<div class="modal fade" id="error-modal" role="dialog">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		        	<div class="modal-header">
+			          <button type="button" class="close" data-dismiss="modal">&times;</button>
+			          <h4 class="modal-title">Choisir un dossier dans lequel enregistrer cette note</h4>
+			        </div>
+
+		            <form class="form-horizontal" method="post" id="error-form">
+
+
+		                <div class="modal-body">
+
+		                    Une erreur s'est produite
+		                </div>  
+
+		                <div class="modal-footer">
+
+		                    <button data-dismiss="modal" class="btn btn-default" name="in_confirm_insertion" id="bt_cancelerror">Cancel</button>
+
+		                </div>
+
+		            </form>
+
+		        </div>
+		    </div>
+		</div>
+
+
+
+		  <div class="modal fade" id="chose-folder-modal" role="dialog">
+		    <div class="modal-dialog">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Choisir un dossier dans lequel enregistrer cette note</h4>
+		        </div>
+		        <div class="modal-body" id="mymodalForm">
+		          	
+
+					<div class="radio radio-styled">
+						<label>
+							<input type="radio" name="optionsRadios" value="1" checked >
+							<span>Enregistrer dans un dossier existant</span>
+						</label>
+					</div>
+				 	<select class="form-control" id="sel1" >
+			            <option>1</option>
+			            <option>2</option>
+			            <option>3</option>
+			            <option>4</option>
+		          	</select><br>
+
+		          	<div class="radio radio-styled">
+						<label>
+							<input type="radio" name="optionsRadios" value="2"  >
+							<span>Creer un nouveau dossier</span>
+						</label>
+					</div>
+					<input type="text" placeholder="Nom du dossier" disabled class="form-control" id="foldername" >
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+		          <button type="button" class="btn btn-primary" id="btSave" data-dismiss="modal" onclick="saveNewNote()">Enregistrer</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+
+
+		  <!-- BEGIN SIMPLE MODAL MARKUP -->
+		<div class="modal fade" id="simpleModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="simpleModalLabel">Gerer les dossiers</h4>
+					</div>
+					<div class="modal-body">
+						<div class="alert alert-danger" role="alert">
+							La suprression est <strong>definitive</strong> et supprimera par la meme occasion toutes les notes du dossier
+						</div>
+						<ul class="list" id="manageFolderList">
+							<li class="tile">
+								<a class="tile-content ink-reaction" href="#2">
+									<div class="tile-icon">
+										<i class="fa fa-folder"></i>
+									</div>
+									<div class="tile-text">Abbey Johnson</div>
+								</a>
+								<a class="btn btn-flat ink-reaction">
+									<i class="fa fa-trash"></i>
+								</a>
+							</li>
+							<li class="tile">
+								<a class="tile-content ink-reaction" href="#2">
+									<div class="tile-icon">
+										<i class="fa fa-folder"></i>
+									</div>
+									<div class="tile-text">Abbey Johnson</div>
+								</a>
+								<a class="btn btn-flat ink-reaction">
+									<i class="fa fa-trash"></i>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		<!-- END SIMPLE MODAL MARKUP -->
+
+		<!-- BEGIN JAVASCRIPT -->
+		<script src="../../assets/js/libs/jquery/jquery-1.11.2.min.js"></script>
+		<script src="../../assets/js/libs/jquery/jquery-migrate-1.2.1.min.js"></script>
+		<script src="../../assets/js/libs/bootstrap/bootstrap.min.js"></script>
+		<script src="../../assets/js/libs/spin.js/spin.min.js"></script>
+		<script src="../../assets/js/libs/autosize/jquery.autosize.min.js"></script>
+		<script src="../../assets/js/libs/nanoscroller/jquery.nanoscroller.min.js"></script>
+		<script src="../../assets/js/libs/ckeditor/ckeditor.js"></script>
+		<script src="../../assets/js/libs/ckeditor/adapters/jquery.js"></script>
+		<script src="../../assets/js/libs/summernote/summernote.min.js"></script>
+		<script src="../../assets/js/core/source/App.js"></script>
+		<script src="../../assets/js/core/source/AppNavigation.js"></script>
+		<script src="../../assets/js/core/source/AppOffcanvas.js"></script>
+		<script src="../../assets/js/core/source/AppCard.js"></script>
+		<script src="../../assets/js/core/source/AppForm.js"></script>
+		<script src="../../assets/js/core/source/AppNavSearch.js"></script>
+		<script src="../../assets/js/core/source/AppVendor.js"></script>
+		<script src="../../assets/js/core/demo/Demo.js"></script>
+		<script src="../../assets/js/core/demo/DemoFormEditors.js"></script>
+	  	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+
+	   <script type="text/javascript">
+
+		     $('#mymodalForm input').on('change', function() {
+					//alert($('input[name="optionsRadios"]:checked', '#mymodalForm').val()); 
+					if($('input[name="optionsRadios"]:checked', '#mymodalForm').val() ==1) 
+					{
+						$('#foldername').prop("disabled", true);
+						$('#sel1').prop("disabled", false);
+						//$('#btSave').prop("disabled", false);
+					}
+					else{
+						$('#foldername').prop("disabled", false);
+						$('#sel1').prop("disabled", true);
+						//$('#btSave').prop("disabled", true);
+
+
+					}
+			});
+		    
+
+		    
+
+	  //    	$("#foldername").keydown(function(event) {
+   //       		if($("#foldername").val()!=""){
+   //       			//console.log($("#foldername").val());
+   //       			$('#btSave').prop("disabled", false);
+   //       		}
+			// });
+//$(".gui-folder").find('li.active:first').children().trigger("click");
+$(document).ready(function() {
+    $(".gui-folder").find('li.active:first').children().trigger("click");
+
+});
+
+$('#dSummernote').summernote({
+    height: 420,
+    placeholder: 'write here...',
+    onChange: test
+});
+
+
+function test()
+{
+	var attr = $("#noteTitle").attr("noteid");
+	if(typeof attr !== typeof undefined && attr !== false){
+		setTimeout(function () {
+		$("#saveMessage").empty();
+		$("#saveMessage").text("Enregistrement en cours ...");
+		//console.log($('#dSummernote').code());
+		autoSave();
+	}, 1000);
+	}
+	
+    
+}
+
+// var minutes = 0.1, the_interval = minutes * 60 * 1000;
+// setInterval(function() {
+//   console.log("I am doing my 5 minutes check");
+//   // do your stuff here
+// }, the_interval);
+
+     	</script> 
+
+		<!-- END JAVASCRIPT -->
+
+	</body>
+</html>

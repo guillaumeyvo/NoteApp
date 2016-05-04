@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
+
+     <script type="text/javascript" src="main.js"></script> 
+     <script type="text/javascript">
+     $(document).ready(function(){
+            loadfolder();
+     });
+     </script> 
+  
+    <style>
+    body        { padding-top:80px; word-wrap:break-word; }
+       
+}
+
+ body{margin:50px;}
+      #accordion .glyphicon { margin-right:10px; }
+      .panel-collapse>.list-group .list-group-item:first-child {border-top-right-radius: 0;border-top-left-radius: 0;}
+      .panel-collapse>.list-group .list-group-item {border-width: 1px 0;}
+      .panel-collapse>.list-group {margin-bottom: 0;}
+      .panel-collapse .list-group-item {border-radius:0;}
+
+      .panel-collapse .list-group .list-group {margin: 0;margin-top: 10px;}
+      .panel-collapse .list-group-item li.list-group-item {margin: 0 -15px;border-top: 1px solid #ddd !important;border-bottom: 0;padding-left: 30px;}
+      .panel-collapse .list-group-item li.list-group-item:last-child {padding-bottom: 0;}
+
+      .panel-collapse div.list-group div.list-group{margin: 0;}
+      .panel-collapse div.list-group .list-group a.list-group-item {border-top: 1px solid #ddd !important;border-bottom: 0;padding-left: 30px;}
+      .panel-collapse .list-group-item li.list-group-item {border-top: 1px solid #DDD !important;}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">AAAAAAAAAAAAAA</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li ><a href="/profile">Profile</a></li>
+          <li class="active"><a href="/create">Creer une note</a></li>
+          <li><a href="/mynotes">Voir les notes</a></li>
+          <li class="pull-right"><a href="/new">New page</a></li>
+          <li class="pull-right"><a href="/logout">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+<div class="container">
+      <div class="row">
+        <div class="col-sm-3 col-md-3">
+          <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><span class="glyphicon glyphicon-folder-close">
+                    </span>Content<span class="glyphicon glyphicon-trash pull-right">
+                    </span></a>
+                </h4>
+              </div>
+              <div id="collapseOne" class="panel-collapse collapse in">
+                <div class="list-group">
+                  <li><a href="#" class="list-group-item" onclick="linkclick(this)">Cras justo odio</a><span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" onclick="linkclick(this)"></span></li>
+                  <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
+                  <a href="#" class="list-group-item">Morbi leo risus</a>
+                  <a href="#" class="list-group-item">Porta ac consectetur ac</a>
+                  <a href="#" class="list-group-item">Vestibulum at eros</a>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour"><span class="glyphicon glyphicon-file">
+                    </span>Reports</a>
+                </h4>
+              </div>
+              <div id="collapseFour" class="panel-collapse collapse">
+                <div class="list-group">
+                  <a href="#" class="list-group-item">Cras justo odio</a>
+                  <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
+                  <a href="#" class="list-group-item">Morbi leo risus</a>
+                  <a href="#" class="list-group-item">Porta ac consectetur ac</a>
+                  <a href="#" class="list-group-item">Vestibulum at eros</a>
+                </div>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+        <div class="col-sm-9 col-md-9">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title" id="title">Dashboard</h3>
+            </div>
+            <div class="panel-body">
+              <textarea name="editor" id="editor"></textarea>
+           <script>
+            var ck = CKEDITOR.replace( 'editor' );
+        </script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+</body>
+</html>
