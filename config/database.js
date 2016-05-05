@@ -22,12 +22,16 @@ var db = {};
 db.user = sequelize.import(appDir + '/app/models/user.js');
 db.folder = sequelize.import(appDir + '/app/models/folder.js');
 db.note = sequelize.import(appDir + '/app/models/note.js');
+db.user_fcbk = sequelize.import(appDir + '/app/models/user_fcbk.js');
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.folder.belongsTo(db.user);
 db.user.hasMany(db.folder);
+
+db.folder.belongsTo(db.user_fcbk);
+db.user_fcbk.hasMany(db.folder);
 
 db.note.belongsTo(db.folder);
 db.folder.hasMany(db.note);

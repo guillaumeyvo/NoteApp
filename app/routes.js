@@ -2,7 +2,6 @@ var db = require('../config/database.js');
 var middleware = require('../app/middleware.js');
 var _ = require('underscore');
 var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
 var email   = require("emailjs/email");
 var randtoken = require('rand-token');
 
@@ -14,6 +13,11 @@ module.exports = function(app, passport) {
     // =====================================
     app.get('/', function(req, res) {
         res.render('index.ejs'); // load the index.ejs file
+    });
+
+
+    app.get('/log', function(req, res) {
+        res.render('log.ejs'); // load the index.ejs file
     });
 
 
@@ -123,7 +127,7 @@ module.exports = function(app, passport) {
     // process the signup form
     // app.post('/signup', do all our passport stuff here);
     app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect : '/', // redirect to the secure profile section
+        successRedirect : '/signup', // redirect to the secure profile section
         failureRedirect : '/signup', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
@@ -173,9 +177,11 @@ module.exports = function(app, passport) {
 
         app.get('/new',isLoggedIn, function(req, res) {
             console.log("=============CONTENU DE LA SESSION=================");
-        console.log(req.user.email);
+        console.log(req.user);
         console.log("=============FIN DU CONTENU DE LA SESSION=================");
-        db.folder.findAll({
+
+        if(req.user.account_type=="local"){
+            db.folder.findAll({
             where:{
                 userId:req.user.id
             },
@@ -183,18 +189,10 @@ module.exports = function(app, passport) {
             { model: db.note }, // load all pictures
           ]
         }).then(function(data){
-                // console.log(data[0].id);
-                // console.log(data[0].name);
-                // console.log(data[0].notes[1]);
-                
-                //console.log(data.length);
-                /*for(var i =0;i<data.length;i++)
-                {
-                    console.log()
-                }*/
-               //res.send(data);
+             
                res.render('main.ejs', {
                     user : req.user,
+                    avatar:req.user.avatar,
                     email:req.user.email,
                     data:data 
                 });
@@ -204,6 +202,39 @@ module.exports = function(app, passport) {
                     console.log(e);
 
                 });
+
+
+
+        }
+        else{
+
+            db.folder.findAll({
+            where:{
+                userFcbkId:req.user.id
+            },
+        include: [
+            { model: db.note }, // load all pictures
+          ]
+        }).then(function(data){
+               res.render('main.ejs', {
+                    user : req.user,
+                    avatar:req.user.avatar,
+                    email:req.user.email,
+                    data:data 
+                });
+            },
+                function(e){
+                    console.log("error");
+                    console.log(e);
+
+                });
+
+        }
+
+
+
+
+        
 
     });
 
@@ -238,7 +269,8 @@ module.exports = function(app, passport) {
 
     app.get('/folders', function(req, res) {
         console.log("folders");
-        db.folder.findAll({
+        if(req.user.account_type=="local"){
+            db.folder.findAll({
             where:{
                 userId:req.user.id
             }}).then(function(folders){
@@ -248,6 +280,21 @@ module.exports = function(app, passport) {
                         console.log("error");
 
             });
+        }
+        else{
+            db.folder.findAll({
+            where:{
+                userFcbkId:req.user.id
+            }}).then(function(folders){
+                //console.log(folders);
+               res.send(folders);
+            },function(e){
+                        console.log("error");
+
+            });
+
+        }
+        
     });
 
     app.get('/foldersandnotes', function(req, res) {
@@ -495,7 +542,7 @@ module.exports = function(app, passport) {
     // handle the callback after facebook has authenticated the user
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {
-            successRedirect : '/profile',
+            successRedirect : '/new',
             failureRedirect : '/'
         }));
 
@@ -521,9 +568,9 @@ module.exports = function(app, passport) {
 
 
       app.get('/profile', isLoggedIn, function(req, res) {
-        // console.log("=============CONTENU DE LA SESSION=================");
-        // console.log(req.session);
-        // console.log("=============FIN DU CONTENU DE LA SESSION=================");
+        console.log("=============CONTENU DE LA SESSION=================");
+        console.log(req.session);
+        console.log("=============FIN DU CONTENU DE LA SESSION=================");
 
         db.folder.findAll({
             where:{
@@ -554,7 +601,9 @@ module.exports = function(app, passport) {
 
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
-    //console.log(req);
+    // console.log("=============================");
+    // console.log(req);
+    // console.log("=============================");
     // if user is authenticated in the session, carry on 
     if (req.isAuthenticated())
         return next();

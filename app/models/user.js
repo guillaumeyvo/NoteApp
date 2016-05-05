@@ -13,6 +13,10 @@ module.exports = function(sequelize, DataTypes) {
 			}
 		},password_hash: {
 			type: DataTypes.STRING
+		},account_type: {
+			type: DataTypes.STRING
+		},avatar: {
+			type: DataTypes.STRING
 		},
 		email_verified: {
 			type: DataTypes.BOOLEAN

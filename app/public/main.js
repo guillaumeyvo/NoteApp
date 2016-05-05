@@ -48,6 +48,7 @@ function getFolderModal(){
           //console.log("retour ajax");
           //console.log(data);
           $("#sel1").empty();
+          $("#foldername").val("");
           
           for(var i=0;i<data.length;i++)
           {
@@ -439,7 +440,7 @@ function search(){
                           </li>
                           <li class="tile divider-full-bleed result"></li>`;
           $("#searchResult").append(note);     
-          //console.log(note);
+          console.log(note);
           
         }
         
