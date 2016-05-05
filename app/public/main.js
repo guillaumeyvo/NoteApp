@@ -314,7 +314,7 @@ function autoSave(){
 
           var d = new Date();
           $("#saveMessage").empty();
-          $("#saveMessage").text("Enregistre automatiquement a "+d.getHours()+" h "+d.getMinutes()+" mm" + d.getSeconds()+"s" );
+          $("#saveMessage").text("Enregistre automatiquement a "+d.getHours()+" h "+d.getMinutes()+" mm" + d.getSeconds()+" s" );
 
         }
     });

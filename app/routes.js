@@ -12,12 +12,21 @@ module.exports = function(app, passport) {
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', function(req, res) {
-        res.render('index.ejs'); // load the index.ejs file
+        res.render('log.ejs',{ message: req.flash('loginMessage') }); // load the index.ejs file
     });
 
 
     app.get('/log', function(req, res) {
-        res.render('log.ejs'); // load the index.ejs file
+        console.log("Inside /login");
+        console.log(req.flash);
+        res.render('log.ejs', { message: req.flash('loginMessage') }); // load the index.ejs file
+    });
+
+    app.get('/sign', function(req, res) {
+        res.render('sign.ejs'); // load the index.ejs file
+    });
+    app.get('/reset', function(req, res) {
+        res.render('reset.ejs'); // load the index.ejs file
     });
 
 
@@ -35,7 +44,7 @@ module.exports = function(app, passport) {
     app.get('/forgotpassword', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('forgotpassword.ejs', { message: req.flash('Message') }); 
+        res.render('forgot.ejs', { message: req.flash('Message') }); 
     });
 
     app.post('/forgotpassword', function(req, res) {
@@ -53,7 +62,7 @@ module.exports = function(app, passport) {
                 });
                 sendMail(user.email,token,"reset");
                 //console.log("Before activated.js");
-        res.render('forgotpassword.ejs', { message: req.flash('forgot') }); 
+        res.render('forgot.ejs', { message: req.flash('forgot') }); 
                
             },
             function(e){
@@ -73,7 +82,7 @@ module.exports = function(app, passport) {
         // render the page and pass in any flash data if it exists
         var token = req.query.token;
         console.log(token);
-        res.render('resetpassword.ejs', { message: req.flash('Message'),token:token }); 
+        res.render('reset.ejs', { message: req.flash('Message'),token:token }); 
     });
 
 
@@ -94,9 +103,9 @@ module.exports = function(app, passport) {
                     token: token
                 });
                 //console.log("Before activated.js");
-                req.flash('resetpassword', 'Your password has been reset');
+                req.flash('resetpassword', 'Votre mot de passe a ete reinitialise');
 
-                res.render('login.ejs', { message: req.flash('resetpassword') }); 
+                res.render('log.ejs', { message: req.flash('resetpassword') }); 
                
             },
             function(e){
@@ -109,8 +118,9 @@ module.exports = function(app, passport) {
     // app.post('/login', do all our passport stuff here);
 
     app.post('/login', passport.authenticate('local-login', {
+        
         successRedirect : '/new', // redirect to the secure profile section
-        failureRedirect : '/login', // redirect back to the signup page if there is an error
+        failureRedirect : '/log', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
 
@@ -121,7 +131,7 @@ module.exports = function(app, passport) {
     app.get('/signup', function(req, res) {
 
         // render the page and pass in any flash data if it exists
-        res.render('signup.ejs', { message: req.flash('signupMessage') });
+        res.render('sign.ejs', { message: req.flash('signupMessage') });
     });
 
     // process the signup form
