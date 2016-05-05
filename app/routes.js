@@ -186,9 +186,9 @@ module.exports = function(app, passport) {
     });
 
         app.get('/new',isLoggedIn, function(req, res) {
-            console.log("=============CONTENU DE LA SESSION=================");
-        console.log(req.user);
-        console.log("=============FIN DU CONTENU DE LA SESSION=================");
+        //     console.log("=============CONTENU DE LA SESSION=================");
+        // console.log(req.user);
+        // console.log("=============FIN DU CONTENU DE LA SESSION=================");
 
         if(req.user.account_type=="local"){
             db.folder.findAll({
@@ -204,7 +204,8 @@ module.exports = function(app, passport) {
                     user : req.user,
                     avatar:req.user.avatar,
                     email:req.user.email,
-                    data:data 
+                    data:data ,
+                    account_type:req.user.account_type
                 });
             },
                 function(e){
@@ -230,7 +231,8 @@ module.exports = function(app, passport) {
                     user : req.user,
                     avatar:req.user.avatar,
                     email:req.user.email,
-                    data:data 
+                    data:data,
+                    account_type:req.user.account_type
                 });
             },
                 function(e){
@@ -403,10 +405,25 @@ module.exports = function(app, passport) {
             });
     });
 
+    
+
    
 
-    app.get('/notesearch/:search', function(req, res) {
-    var search = req.params.search;
+    app.post('/notesearch', function(req, res) {
+    console.log("=========================");
+    console.log(req.isAuthenticated());
+    console.log(req.body);
+    //_.pick(req.body, 'folder').folder
+    console.log(_.pick(req.body, 'email').email);
+    console.log(_.pick(req.body, 'keyword').keyword);
+    console.log(_.pick(req.body, 'account').account);
+
+    console.log("=========================");
+    //var search = req.params.search;
+    var search = _.pick(req.body, 'keyword').keyword;
+    var email=_.pick(req.body, 'email').email;
+    var account=_.pick(req.body, 'account').account;
+    if(account=="local"){
         db.note.findAll({
             where:{
                 
@@ -423,13 +440,88 @@ module.exports = function(app, passport) {
                     }
                   ]
 
-            }}).then(function(note){
+            },
+            include: [
+            { model: db.folder,
+                require:true,
+                where :{
+                    id :{
+                         $ne: null
+                    }//,
+                    //id:req.user.id
+                },
+                include:[
+                    {
+                        model:db.user,
+                        where:{
+                            email:email
+                        }
+                    }
+                ]
+            },
+          ]
+        }).then(function(note){
+            console.log("/////////////////////////////////////////////////////////");
                 console.log(note);
+                console.log("/////////////////////////////////////////////////////////");
                res.send(note);
             },function(e){
-                        console.log("error");
+                    console.log(e);
+                    console.log("error");
 
             });
+
+    }
+    else{
+        db.note.findAll({
+            where:{
+                
+                  $or: [
+                    {
+                      title: {
+                        $like: '%'+search+'%'
+                      }
+                    },
+                    {
+                      content: {
+                        $like: '%'+search+'%' 
+                      }
+                    }
+                  ]
+
+            },
+            include: [
+            { model: db.folder,
+                require:true,
+                where :{
+                    id :{
+                         $ne: null
+                    }//,
+                    //id:req.user.id
+                },
+                include:[
+                    {
+                        model:db.user_fcbk,
+                        where:{
+                            email:email
+                        }
+                    }
+                ]
+            },
+          ]
+        }).then(function(note){
+            console.log("/////////////////////////////////////////////////////////");
+                console.log(note);
+                console.log("/////////////////////////////////////////////////////////");
+               res.send(note);
+            },function(e){
+                    console.log(e);
+                    console.log("error");
+
+            });
+
+    }
+        
     });
 
     app.put('/updateNote',isLoggedIn, function(req, res){
@@ -578,9 +670,9 @@ module.exports = function(app, passport) {
 
 
       app.get('/profile', isLoggedIn, function(req, res) {
-        console.log("=============CONTENU DE LA SESSION=================");
-        console.log(req.session);
-        console.log("=============FIN DU CONTENU DE LA SESSION=================");
+        // console.log("=============CONTENU DE LA SESSION=================");
+        // console.log(req.session);
+        // console.log("=============FIN DU CONTENU DE LA SESSION=================");
 
         db.folder.findAll({
             where:{

@@ -287,6 +287,7 @@ function updateNote(){ //save button
         url: '/updateNote',
         data : notedata,
         success: function(data) {
+
            //myFunction();
         }
     });
@@ -302,15 +303,15 @@ function updateNote(){ //save button
 
 
 function autoSave(){
-  console.log("Inside autoSave");
+  //console.log("Inside autoSave");
   var notedata ={title: $("#noteTitle").val(),content:$(".note-editable").html(), noteId :$("#noteTitle").attr("noteid")};
-  console.log(notedata);
+  //console.log(notedata);
       $.ajax({
         type: 'PUT',
         url: '/updateNote',
         data : notedata,
         success: function(data) {
-            console.log("Inside Ajax");
+            //console.log("Inside Ajax");
 
           var d = new Date();
           $("#saveMessage").empty();
@@ -410,12 +411,17 @@ function search(){
     event.stopPropagation();
  
     var searchKeywords=$("#searchInput").val();
+    var account_type=$(".profile-info").attr("account");
+    var userEmail=$(".profile-info").text().trim();
+    var searchData ={keyword: searchKeywords,email:userEmail,account:account_type};
         
     $.ajax({
 
-      type: 'GET',
-      url: '/notesearch/'+searchKeywords,
+      type: 'POST',
+      url: '/notesearch',
+      data : searchData,
       success: function(notes) {
+        //console.log(notes);
         //.substring(0,length);
         //console.log
         //(notes);

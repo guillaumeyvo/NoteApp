@@ -58,7 +58,7 @@
 						<li class="dropdown">
 							<a href="javascript:void(0);" class="dropdown-toggle ink-reaction" data-toggle="dropdown">
 								<img src="<%= avatar %>" alt="" />
-								<span class="profile-info">
+								<span class="profile-info" account="<%= account_type %>">
 									<%= email %>
 								</span>
 							</a>
@@ -188,7 +188,7 @@
 				<!-- BEGIN OFFCANVAS SEARCH -->
 				<div id="offcanvas-search" class="offcanvas-pane width-8">
 					<div class="offcanvas-head">
-						<header class="text-primary">Rechercher dans les notes</header>
+						<header class="text-primary">Rechercher vos notes</header>
 					
 						<div class="offcanvas-tools">
 							<a class="btn btn-icon-toggle btn-default-light pull-right" data-dismiss="offcanvas">
@@ -211,7 +211,8 @@
 															</div>
 															<div class="input-group-btn">
 																<!-- <button class="btn btn-floating-action btn-default-bright" type="button"><i class="fa fa-search"></i></button> -->
-																<button onclick="search()" class="btn btn-icon-toggle ink-reaction"><i class="fa fa-search"></i></button>
+																<!-- <button onclick="search()" class="btn btn-icon-toggle ink-reaction"><i class="fa fa-search"></i></button> -->
+																<a id="searchbtn" class="btn btn-icon-toggle btn-default" ><i class="fa fa-search"></i></a>
 
 															</div>
 														</div>
@@ -468,6 +469,10 @@
 			// });
 //$(".gui-folder").find('li.active:first').children().trigger("click");
 $(document).ready(function() {
+
+	$("#searchbtn").on('click', function() {
+   		search();
+	});
     $(".gui-folder").find('li.active:first').children().trigger("click");
 
 });
