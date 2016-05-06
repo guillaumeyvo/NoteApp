@@ -12,7 +12,66 @@ module.exports = function(app, passport) {
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', function(req, res) {
-        res.render('log.ejs',{ message: req.flash('loginMessage') }); // load the index.ejs file
+        if(req.isAuthenticated()){
+               if(req.user.account_type=="local"){
+            db.folder.findAll({
+            where:{
+                userId:req.user.id
+            },
+        include: [
+            { model: db.note }, // load all pictures
+          ]
+        }).then(function(data){
+             
+               res.render('main.ejs', {
+                    user : req.user,
+                    avatar:req.user.avatar,
+                    email:req.user.email,
+                    data:data ,
+                    account_type:req.user.account_type
+                });
+            },
+                function(e){
+                    console.log("error");
+                    console.log(e);
+
+                });
+
+
+
+        }
+        else{
+
+            db.folder.findAll({
+            where:{
+                userFcbkId:req.user.id
+            },
+        include: [
+            { model: db.note }, // load all pictures
+          ]
+        }).then(function(data){
+               res.render('main.ejs', {
+                    user : req.user,
+                    avatar:req.user.avatar,
+                    email:req.user.email,
+                    data:data,
+                    account_type:req.user.account_type
+                });
+            },
+                function(e){
+                    console.log("error");
+                    console.log(e);
+
+                });
+
+        }
+
+        }
+        else{
+            res.render('log.ejs',{ message: req.flash('loginMessage') }); // load the index.ejs file
+
+        }
+        
     });
 
 
@@ -28,6 +87,7 @@ module.exports = function(app, passport) {
     app.get('/reset', function(req, res) {
         res.render('reset.ejs'); // load the index.ejs file
     });
+  
 
 
 
@@ -199,6 +259,9 @@ module.exports = function(app, passport) {
             { model: db.note }, // load all pictures
           ]
         }).then(function(data){
+            console.log("+++++++++++++++++++++++++++++++");
+            console.log(data);
+            console.log("+++++++++++++++++++++++++++++++");
              
                res.render('main.ejs', {
                     user : req.user,
@@ -362,9 +425,13 @@ module.exports = function(app, passport) {
                 token:token
             }}).then(
             function(user){
-                console.log("Before updateAttributes");
+                if(user){
+                    console.log("Before updateAttributes");
+                var newtoken = randtoken.generate(16);
+                console.log(newtoken);
                 user.updateAttributes({
-                    email_verified : true
+                    email_verified : true,
+                    token:newtoken
                 });
 
                 console.log("Creation d u dossier par defaut");
@@ -396,7 +463,15 @@ module.exports = function(app, passport) {
                         }                     
                         )});
 
-                res.render('activated.ejs');
+                res.render('activation.ejs');
+
+                }
+                else{
+                    res.render('erroractivation.ejs');
+
+
+                }
+                
                
             },
             function(e){
@@ -462,7 +537,7 @@ module.exports = function(app, passport) {
           ]
         }).then(function(note){
             console.log("/////////////////////////////////////////////////////////");
-                console.log(note);
+                console.log(note.dataValues);
                 console.log("/////////////////////////////////////////////////////////");
                res.send(note);
             },function(e){
@@ -580,6 +655,7 @@ module.exports = function(app, passport) {
 
     app.delete('/folderDelete/:id', function(req, res) {
     var folderId = parseInt(req.params.id, 10);
+    console.log(folderId);
         db.folder.destroy({
             where:{
                 id:folderId
@@ -588,6 +664,7 @@ module.exports = function(app, passport) {
                //res.send(numberOfRowDeleted);
                res.status(204).send();
             },function(e){
+                console.log(e);
                         console.log("error");
 
             });

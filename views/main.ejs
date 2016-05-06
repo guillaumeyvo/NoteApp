@@ -157,7 +157,7 @@
 						<li class="gui-folder">
 							<a>
 								<div class="gui-icon"><i class="md md-folder"></i></div>
-								<span class="title"><%= data[i].name %></span>
+								<span class="title" fid="<%= data[i].id %>"><%= data[i].name %></span>
 							</a>
 							<ul>
 								<% for(var j=0; j<data[i]["notes"].length; j++) { %>
@@ -188,7 +188,7 @@
 				<!-- BEGIN OFFCANVAS SEARCH -->
 				<div id="offcanvas-search" class="offcanvas-pane width-8">
 					<div class="offcanvas-head">
-						<header class="text-primary">Rechercher vos notes</header>
+						<header class="text-primary">Rechercher dans vos notes</header>
 					
 						<div class="offcanvas-tools">
 							<a class="btn btn-icon-toggle btn-default-light pull-right" data-dismiss="offcanvas">

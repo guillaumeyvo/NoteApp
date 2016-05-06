@@ -78,14 +78,14 @@ function getFolderManageModal(){
             
 
             var folder = `<li class='tile' folderid='${data[i].id}' id='${data[i].name}'>
-                              <a class='tile-content ink-reaction' href='#2'>
+                              <a class='tile-content ink-reaction' href='#'>
                                 <div class='tile-icon'>
                                   <i class='fa fa-folder'></i>
                                 </div>
                                 <div class='tile-text'>${data[i].name}</div>
                               </a>
                               <a class='btn btn-flat ink-reaction'>
-                                <i class='fa fa-trash' value='${data[i].name}'  onclick='deleteFolder(this)'></i>
+                                <i class='fa fa-trash' idFolder='${data[i].id}' value='${data[i].name}'  onclick='deleteFolder(this)'></i>
                               </a>
                             </li>`;
             $("#manageFolderList").append(folder);
@@ -97,16 +97,20 @@ function getFolderManageModal(){
 
 
 function deleteFolder(name){
-  
-  name =$(name).attr('value');
+  //var id =$(name).attr('idFolder');
+  var idFolder =$(name).attr('idFolder');
+  //console.log($(name).attr('idFolder'));
+  //var name =$(name).attr('value');
 
   $.ajax({
                 type: 'DELETE',
-                url: '/folderDeleteByName/'+name,
+                url: '/folderDelete/'+idFolder,
                 success: function(note) {
                   // find id with name and remove it with jquery 
-                  $("#main-menu").find('.gui-folder:contains('+name+')').remove();
-                  $("#manageFolderList").find('li[id="'+name+'"]').remove();
+                  //$("#main-menu").find('.gui-folder:contains('+name+')').remove();
+                  $("#main-menu").find('span[fid="'+idFolder+'"]').parent().parent().remove()
+                  $("#manageFolderList").find('li[folderid="'+idFolder+'"]').remove();
+                  $(".gui-folder").find('li').children().trigger("click");
                 }
             });
 
@@ -421,7 +425,9 @@ function search(){
       url: '/notesearch',
       data : searchData,
       success: function(notes) {
-        //console.log(notes);
+        console.log("====NOTES=======");
+        console.log(notes);
+        console.log("===========");
         //.substring(0,length);
         //console.log
         //(notes);
@@ -430,7 +436,7 @@ function search(){
         {
           var content =notes[j].content;
           //${notes[j].content}.substring(0,100);
-          var truncateContent=content.substring(0,200);
+          var truncateContent=content.substring(0,400);
           //console.log(truncateContent);
 
           var note = `<li class='tile result'>
@@ -445,9 +451,10 @@ function search(){
                           </a>
                           </li>
                           <li class="tile divider-full-bleed result"></li>`;
-          $("#searchResult").append(note);     
+          $("#searchResult").append(note);  
+          console.log("===========");
           console.log(note);
-          
+          console.log("===========")   ;
         }
         
 

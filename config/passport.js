@@ -133,13 +133,13 @@ module.exports = function(passport) {
                         if(user.email_verified==true)
                             return done(null, user);
                         else
-                            return done(null, false, req.flash('loginMessage', 'Your account has not yet been activated'));
+                            return done(null, false, req.flash('loginMessage', 'Votre compte n\'a pas encore ete active'));
                     } else {
-                        return done(null, false, req.flash('loginMessage', 'Wrong email or password.'));
+                        return done(null, false, req.flash('loginMessage', 'Email et/ou mot de passe incorrects'));
                     }
                 }, 
                 function(e){
-                    return done(null, false, req.flash('loginMessage', 'Wrong email or password.'));
+                    return done(null, false, req.flash('loginMessage', 'Email et/ou mot de passe incorrects'));
                     //return done(e);
                     }
                 );
@@ -271,20 +271,20 @@ module.exports = function(passport) {
 
 function sendMail(user_email,user_token) {
     var server  = email.server.connect({
-           user:    "guillaumeyvo", 
-           password:"guiz@08080636", 
+           user:    "noreplydlcapp", 
+           password:"dlcapplicationapi", 
            host:    "smtp.gmail.com", 
            ssl:     true
         });
 
         // send the message and get a callback with an error or details of the message that was sent
         server.send({
-           from:    "nodeapp@gmail.com", 
+           from:    "Noteapp@gmail.com", 
            to:      user_email,
            subject: "Emailjs",
            attachment: 
            [
-              {data:"Click on the following link to activate your account <a href='http://localhost:8080/activation/?token="+user_token+"'>Activate your account</a> ", alternative:true},
+              {data:"Cliquez sur le lien suivant pour activer votre compte <a href='http://localhost:8080/activation/?token="+user_token+"'>Activer votre compte</a> ", alternative:true},
            ]
             }, function(err, message) { 
                 console.log(err || message); 
