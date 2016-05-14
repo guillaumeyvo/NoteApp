@@ -63,10 +63,7 @@ module.exports = function(app, passport) {
                     }, // load all pictures
                 ]
             }).then(function(data) {
-                    console.log("+++++++++++++++++++++++++++++++");
-                    console.log(data);
-
-                    console.log("+++++++++++++++++++++++++++++++");
+                   
 
                     res.render('main.ejs', {
                         user: req.user,

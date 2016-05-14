@@ -4,6 +4,17 @@ var _ = require('underscore');
 var nodemailer = require('nodemailer');
 var email = require("emailjs/email");
 var randtoken = require('rand-token');
+var fs = require("fs");
+var multer  =   require('multer');
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './app/public/assets/avatar');
+  },
+  filename: function (req, file, callback) {
+    callback(null, req.user.email + file.originalname.substring(file.originalname.lastIndexOf('.')));
+  }
+});
+var upload = multer({ storage : storage}).single('userPhoto');
 
 module.exports = function(app, passport) {
 
@@ -179,6 +190,35 @@ module.exports = function(app, passport) {
         failureRedirect: '/log', // redirect back to the signup page if there is an error
         failureFlash: true // allow flash messages
     }));
+
+
+
+
+    app.post('/uploadProfilePicture', function(req, res) {
+
+        upload(req,res,function(err) {
+        if(err) {
+            console.log(err);
+            return res.send("Error uploading file.");
+        }
+        db.user.findOne({
+                where: {
+                    id: req.user.id
+                }
+            }).then(function(user) {
+                user.updateAttributes({
+                    avatar: '../../assets/avatar/'+req.user.email + req.file.originalname.substring(req.file.originalname.lastIndexOf('.'))
+                });
+                res.send({});
+            }, function(e) {
+                console.log(e);
+                res.send(e);
+
+            });
+        
+        });
+        
+    });
 
     // =====================================
     // SIGNUP ==============================

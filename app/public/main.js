@@ -273,6 +273,41 @@ function addNewNote() { // add button
 
 }
 
+function testf(){
+    $('#upload-modal').modal('show');
+}
+
+
+function uploadProfilePicture(image){
+    var fileExtension = $(image).val().substring( $(image).val().lastIndexOf('.'));
+    var control=$(image);
+    var form_data = new FormData();                  // Creating object of FormData class
+    form_data.append("userPhoto", $(image).prop("files")[0]);   
+ 
+    console.log("data",form_data);
+    $.ajax({
+        url: "/uploadProfilePicture",
+        dataType: 'script',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,                         // Setting the data attribute of ajax with file_data
+        type: 'post',
+        success: function(data) {
+                var userEmail = $(".profile-info").text().trim();
+                $("#avatar").removeAttr("src");
+                $("#avatar").attr("src","../../assets/avatar/"+userEmail+fileExtension+"?"+Math.random()*9999);
+            },
+        error: function(errResponse) {
+                $('#error-save-modal').modal('show');
+                console.log(errResponse);
+                console.log("AJAX error in request: " + JSON.stringify(errResponse, null, 2));
+            }
+    });
+        control.replaceWith( control = control.clone( true ) );
+
+}
+
 
 
 
