@@ -23,6 +23,35 @@ module.exports = function(app, passport) {
     });
 
 
+    app.post('/createnote',middleware.isLoggedIn, function(req, res) {
+    db.note.create(_.pick(req.body, 'title', 'content')).then(function(note){
+        
+        db.folder.findOne({
+        where:{
+            id:_.pick(req.body, 'folder').folder
+        }}).then(function(folders){
+            console.log("Nom du dossier",folders);
+            folders.addNote(note);
+             res.send(note);
+        },function(e){
+                    console.log("error");
+                    console.log(e);
+
+        });
+
+      
+
+    },function(e){
+
+    });
+        
+         
+        // res.render('create.ejs', {
+        //     user : req.user // get the user out of session and pass to template
+        // });
+    });
+
+
     app.put('/updateNote', middleware.isLoggedIn, function(req, res) {
         db.note.findOne({
             where: {
@@ -32,6 +61,25 @@ module.exports = function(app, passport) {
             note.updateAttributes({
                 title: req.body.title,
                 content: req.body.content
+            });
+            res.status(200).send();
+        }, function(e) {
+            console.log("error");
+            console.log(e);
+
+        });
+
+    });
+
+    app.put('/updateNoteFolder/:id', middleware.isLoggedIn, function(req, res) {
+        var noteId = parseInt(req.params.id, 10);
+        db.note.findOne({
+            where: {
+                id: noteId
+            }
+        }).then(function(note) {
+            note.updateAttributes({
+                folderId: _.pick(req.body, 'folderId').folderId
             });
             res.status(200).send();
         }, function(e) {

@@ -144,19 +144,15 @@
 									            <option>3</option>
 									            <option>4</option>
 								          	</select> -->
-								          	<button type="button" class="btn ink-reaction btn-flat dropdown-toggle" data-toggle="dropdown">
-														Zoom up <i class="fa fa-caret-down text-default-light"></i>
+								          	<button type="button" id="currentFolder" selectedFolderId="<%= data[0].id %>" class="btn ink-reaction btn-flat dropdown-toggle" data-toggle="dropdown">
+														<%= data[0].name %> <i class="fa fa-caret-down text-default-light" style='margin-left: 7px;'></i>
 													</button>
-													<ul class="dropdown-menu animation-zoom" role="menu">
-														<li><a href="#">Add</a></li>
-														<li><a href="#">Edit</a></li>
-														<li><a href="#">Copy</a></li>
-														<li><a href="#">Print</a></li>
-														<li class="divider"></li>
-														<li><a href="#"><i class="fa fa-fw fa-times text-danger"></i> Remove item</a></li>
+													<ul class="dropdown-menu animation-zoom" id="folderList" role="menu">
+														<% for(var i=0; i<data.length; i++) { %>
+														<li><a href="#" folderid="<%= data[i].id %>" onclick="changeNoteFolder(this)"><%= data[i].name %></a></li>
+														<% } %>
 													</ul>
 										
-											<a class="btn btn-icon-toggle btn-default" onclick="testf()" ><i class="fa md-android" ></i></a>
 											<a class="btn btn-icon-toggle btn-default" onclick="getFolderManageModal()" data-toggle="modal" data-target="#simpleModal"><i class="fa fa-folder" ></i></a>
 											
 											<a class="btn btn-icon-toggle btn-default" onclick="addNewNote()"><i class="md md-add"></i></a>

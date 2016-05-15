@@ -100,6 +100,7 @@ function deleteFolder(name) {
     var idFolder = $(name).attr('idFolder');
     //console.log($(name).attr('idFolder'));
     //var name =$(name).attr('value');
+    
 
     $.ajax({
         type: 'DELETE',
@@ -154,6 +155,7 @@ function loadNote(a) {
     //console.log($(a).closest("li").addClass("active"));
     $("#main-menu").find(".active").removeClass("active");
     $(a).closest("li.gui-folder").addClass("active");
+    $("#currentFolder").show(); // in case it's hidden
 
 
 
@@ -164,16 +166,87 @@ function loadNote(a) {
         success: function(note) {
             //console.log(note);
             $("#noteTitle").empty();
-            //$("#noteTitle").removeAttr('noteId');
-            //console.log("NOTE ID ",note.id);
             $("#noteTitle").attr('noteId', note.id);
             $("#noteTitle").val(note.title);
             $(".note-editable").empty();
             $(".note-editable").append(note.content);
-            //CKEDITOR.instances['editor'].setData(note.content);
+            //console.log(note.folderId);
+            $("#folderList").find('a[folderid=' + note.folderId + ']').trigger("click");
 
         }
     });
+
+}
+
+
+// function used to change the folder of a note
+
+function changeNoteFolder(folderSelected){
+
+    //hides the duplicate folder in the list on first load
+    if($(folderSelected).attr("folderId")==$("#currentFolder").attr("selectedFolderId")){
+        $(folderSelected).hide();
+        return;
+    }
+
+
+    var noteId = $("#noteTitle").attr("noteid");
+    var noteTitle = $("#noteTitle").val();
+    var icon = "<i class='fa fa-caret-down text-default-light' style='margin-left: 7px;'></i>";
+    var folderSelectedText=$(folderSelected).text(); // get the text of the folder selected
+
+    
+    $(folderSelected).hide(); // hide the selected folder from the list
+    $("#currentFolder").text(folderSelectedText); // assign the text of the selected folder in the list to the actual folder of the note
+    $("#currentFolder").append(icon); // add the carret of the dropdown
+
+
+    // make appear the previous selected folder in the list since it was hidden initially
+    $("#folderList").find('a[folderid=' +$("#currentFolder").attr("selectedFolderId") + ']').show(); 
+
+    //assign the id of the chosen item in the list as the id of the selected folder
+    $("#currentFolder").attr("selectedFolderId",$(folderSelected).attr("folderid"));
+
+
+    var originalFolderId = $(".gui-folder").find('a[id=' + noteId + ']').parent().parent().prev().children().next().attr("fid");
+
+
+    // compare the id of the sleected folder in the list and the original folder id of the note
+    // this avoid unnecessary ajax request
+    if($(folderSelected).attr("folderid")!= originalFolderId ){
+
+    var data = {
+        folderId: $(folderSelected).attr("folderid")
+    };
+    $.ajax({
+        type: 'PUT',
+        url: '/updateNoteFolder/'+noteId,
+        data: data,
+        success: function(data) {
+
+            // make the relevant changes to the ui
+
+            $("#main-menu").find(".active").removeClass("active");
+            $("#main-menu").find('.gui-folder:contains(' + folderSelectedText + ')').addClass("active");
+            $(".gui-folder").find('a[id=' + noteId + ']').parent().remove();
+
+            var noteLink = `<li><a href='#' id='${noteId}' class='active' onclick='loadNote(this)'>
+            <span class='title'>${noteTitle}<i style='float: right;' class='md md-delete' onclick='deleteNote(this)'></i>
+            </span></a></li>`;
+                $("#main-menu").find('.gui-folder:contains(' + folderSelectedText + ')').children().next().prepend(noteLink);
+                $(".gui-folder").find('li.active:first').children().trigger("click");
+                $("#main-menu").find('.gui-folder:contains(' + folderSelectedText + ')').find(".gui-icon").trigger("click");
+                $(".gui-folder").find('a[id=' + noteId + ']').trigger("click"); // triggers click in order to expand the folder
+
+        },
+        error: function(errResponse) {
+            console.log(errResponse);
+            $('#error-save-modal').modal('show');
+                
+        }
+    });
+
+    }
 
 }
 
@@ -238,34 +311,8 @@ function deleteNote(a, from) {
 }
 
 
-function addNewNote() { // add button
-
-    // Inutile vu la fonction autosave 
-    // $('#save-file-modal').modal('show');
-
-
-    //   $('#save-file-modal .modal-footer button').on('click', function (e) {
-    //       var $target = $(e.target);
-    //       $(this).closest('.modal').on('hidden.bs.modal', function (e) {
-    //           //alert('The buttons id that closed the modal is: #' + $target[0].id);
-    //           if ($target[0].id=="bt_delete") {
-    //              updateNote();
-    //              $("#noteTitle").val("");
-    //              $(".note-editable").empty();
-    //              noteId :$("#noteTitle").removeAttr("noteid");
-    //              $("#saveMessage").empty();
-
-
-    //           }
-    //           else{
-    //             $("#noteTitle").val("");
-    //             $(".note-editable").empty();
-    //             noteId :$("#noteTitle").removeAttr("noteid");
-    //             $("#saveMessage").empty();
-    //           }
-    //       });
-    //   });
-
+function addNewNote() { 
+    $("#currentFolder").hide();
     $("#noteTitle").val("");
     $(".note-editable").empty();
     $("#noteTitle").removeAttr("noteid");
@@ -281,32 +328,38 @@ function testf(){
 function uploadProfilePicture(image){
     var fileExtension = $(image).val().substring( $(image).val().lastIndexOf('.'));
     var control=$(image);
-    var form_data = new FormData();                  // Creating object of FormData class
+
+    //Creating form data for posting image
+    var form_data = new FormData();                 
     form_data.append("userPhoto", $(image).prop("files")[0]);   
  
-    console.log("data",form_data);
     $.ajax({
         url: "/uploadProfilePicture",
         dataType: 'script',
+
+        // cache - contentType - processData need to be set to false for posting image
         cache: false,
         contentType: false,
         processData: false,
-        data: form_data,                         // Setting the data attribute of ajax with file_data
+        data: form_data,                        
         type: 'post',
         success: function(data) {
                 var userEmail = $(".profile-info").text().trim();
+                //removing current image and assigning new image with randon parameter for clearing the old one from cache
                 $("#avatar").removeAttr("src");
                 $("#avatar").attr("src","../../assets/avatar/"+userEmail+fileExtension+"?"+Math.random()*9999);
+                // clearing input control to force the change event to occur in case of choosing an image with same name
+                control.replaceWith( control = control.clone( true ) );
             },
         error: function(errResponse) {
                 $('#error-save-modal').modal('show');
-                console.log(errResponse);
-                console.log("AJAX error in request: " + JSON.stringify(errResponse, null, 2));
+                
             }
     });
-        control.replaceWith( control = control.clone( true ) );
 
 }
+
+
 
 
 
@@ -382,9 +435,10 @@ function saveNewNote() { //save button
                 $("#main-menu").find('.gui-folder:contains(' + folder + ')').addClass("active");
 
                 var noteLink = `<li><a href='#' id='${data.id}' class='active' onclick='loadNote(this)'>
-            <span class='title'>${data.title}<i style='float: right;' class='md md-delete' onclick='deleteNote(this)'></i>
-            </span></a></li>`;
+                <span class='title'>${data.title}<i style='float: right;' class='md md-delete' onclick='deleteNote(this)'></i>
+                </span></a></li>`;
                 $("#main-menu").find('.gui-folder:contains(' + folder + ')').children().next().prepend(noteLink);
+                $("#currentFolder").show(); // in case it's hidden
 
             }
         });
@@ -421,6 +475,7 @@ function saveNewNote() { //save button
 
 
                 var folder = data.name;
+                var folderId = data.id;
                 var notedata = {
                     title: $("#noteTitle").val(),
                     content: $(".note-editable").html(),
@@ -441,6 +496,11 @@ function saveNewNote() { //save button
                   </span></a></li>`;
                         $("#main-menu").find('.gui-folder:contains(' + folder + ')').children().next().prepend(noteLink);
 
+                        //<li><a href="#" folderid="<%= data[i].id %>" onclick="changeNoteFolder(this)"><%= data[i].name %></a></li>
+
+                        var dropdownFolder =`<li><a href="#" folderid='${folderId}' onclick="changeNoteFolder(this)">${folder}</a></li>`;
+                        $("#folderList").append(dropdownFolder);
+                        $("#currentFolder").show(); // in case it's hidden
                     }
                 });
 
