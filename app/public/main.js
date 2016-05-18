@@ -108,6 +108,7 @@ function deleteFolder(name) {
         success: function(note) {
             // find id with name and remove it with jquery 
             //$("#main-menu").find('.gui-folder:contains('+name+')').remove();
+            console.log("idFolder",idFolder);
             $("#main-menu").find('span[fid="' + idFolder + '"]').parent().parent().remove()
             $("#manageFolderList").find('li[folderid="' + idFolder + '"]').remove();
             $(".gui-folder").find('li').children().trigger("click");
@@ -116,22 +117,6 @@ function deleteFolder(name) {
 
 }
 
-function saveNote() {
-    var notedata = {
-        title: $("#usr").val(),
-        content: CKEDITOR.instances['editor1'].getData(),
-        folder: $("#sel1").val()
-    };
-    $.ajax({
-        type: 'POST',
-        url: '/createnote',
-        data: notedata,
-        success: function(data) {
-            //myFunction();
-        }
-    });
-
-}
 
 function folderDelete(a) {
     console.log(a);
@@ -363,24 +348,12 @@ function uploadProfilePicture(image){
 
 
 
-
-function updateNote() { //save button
+//triggered when save button is clicked
+function updateNote() { 
     var attr = $("#noteTitle").attr("noteid");
     if (typeof attr !== typeof undefined && attr !== false) {
-        var notedata = {
-            title: $("#noteTitle").val(),
-            content: $(".note-editable").html(),
-            noteId: $("#noteTitle").attr("noteid")
-        };
-        $.ajax({
-            type: 'PUT',
-            url: '/updateNote',
-            data: notedata,
-            success: function(data) {
+        autoSave();
 
-                //myFunction();
-            }
-        });
     } else { // creation of new note chose-folder-modal
         getFolderModal();
         $('#chose-folder-modal').modal('show');
@@ -448,9 +421,7 @@ function saveNewNote() { //save button
 
         console.log("Inside else");
         $("#foldername").val();
-        // console.log($("#foldername").val());
-        // console.log($("#noteTitle").val());
-        // console.log($(".note-editable").html());
+
 
 
 
@@ -465,7 +436,7 @@ function saveNewNote() { //save button
                 var folderIcon = `<li class='gui-folder'>
                               <a>
                                 <div class='gui-icon'><i class='md md-folder'></i></div>
-                                <span class='title'>${data.name}</span>
+                                <span class='title' fid='${data.id}'>${data.name}</span>
                               </a>
                               <ul>
                                 

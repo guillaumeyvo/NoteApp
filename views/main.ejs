@@ -565,6 +565,7 @@
 	  	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
 
 	   <script type="text/javascript">
+	   var timeOutFunction; // used to reset timer in the timeout function used for ajax request
 
 			$('#mymodalForm input').on('change', function() {
 				//alert($('input[name="optionsRadios"]:checked', '#mymodalForm').val()); 
@@ -613,9 +614,10 @@
 
 			function test()
 			{
+				clearTimeout(timeOutFunction);
 				var attr = $("#noteTitle").attr("noteid");
 				if(typeof attr !== typeof undefined && attr !== false){
-					setTimeout(function () {
+					timeOutFunction =setTimeout(function () {
 					$("#saveMessage").empty();
 					$("#saveMessage").text("Enregistrement en cours ...");
 					//console.log($('#dSummernote').code());
