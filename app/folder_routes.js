@@ -91,4 +91,23 @@ module.exports = function(app, passport) {
         });
 
     });
+
+    app.put('/updateFolderName', middleware.isLoggedIn, function(req, res) {
+        db.folder.findOne({
+            where: {
+                id: _.pick(req.body, 'folderId').folderId
+            }
+        }).then(function(folder) {
+            folder.updateAttributes({
+                name: _.pick(req.body, 'newFoldername').newFoldername
+                
+            });
+            res.status(200).send();
+        }, function(e) {
+            console.log("error");
+            console.log(e);
+
+        });
+
+    });
 }

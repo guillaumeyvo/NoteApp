@@ -84,6 +84,9 @@ function getFolderManageModal() {
                                 <div class='tile-text'>${data[i].name}</div>
                               </a>
                               <a class='btn btn-flat ink-reaction'>
+                                <i class='fa fa-edit' editFolderId='${data[i].id}' value='${data[i].name}'  onclick='editFolderName(this)'></i>
+                              </a>
+                              <a class='btn btn-flat ink-reaction'>
                                 <i class='fa fa-trash' idFolder='${data[i].id}' value='${data[i].name}'  onclick='deleteFolder(this)'></i>
                               </a>
                             </li>`;
@@ -94,12 +97,68 @@ function getFolderManageModal() {
 
 }
 
+function editFolderName(icon){
+
+    if($(icon).attr('class') =='fa fa-edit'){
+        var newIcon = `<a class='btn btn-flat ink-reaction'>
+                    <i class='fa fa-remove' onclick='editFolderName(this)'></i>
+                  </a>`;
+
+        var newDivContent =`<div class='tile-text'><input type='text' placeholder='Nom du dossier' class='form-control' id='newfoldername' value='${$(icon).attr('value')}'></div>`;
+        
+        // changing the edit icon de check icon
+        $(icon).removeAttr('class');
+        $(icon).attr('class',"fa fa-check-square");
+        // adding the cancel icon
+        $("#manageFolderList [folderid='" + $(icon).attr('editFolderId') + "'] .fa-check-square").parent().after(newIcon);
+        
+        // replacing the div with the new containing an input for editing
+        $(icon).parent().prev().children(':nth-child(2)').replaceWith(newDivContent);
+
+    }
+    else{
+        $(icon).removeAttr('class');
+        $(icon).attr('class',"fa fa-edit");
+        $("#manageFolderList").find('li[folderid="' + $(icon).attr('editFolderId') + '"]').find('.fa-remove').parent().remove();
+        var newDivContent = `<div class='tile-text'>${$('#newfoldername').val()}</div>`;
+
+        var folderData = {
+            folderId: $(icon).attr('editFolderId'),
+            newFoldername: $('#newfoldername').val()
+        };
+        //console.log(notedata);
+        $.ajax({
+            type: 'PUT',
+            url: '/updateFolderName',
+            data: folderData,
+            success: function(data) {
+                //console.log("Inside Ajax");
+                console.log($(icon).attr('editFolderId'));
+                console.log($('#newfoldername').val());
+                var newFoldername=$('#newfoldername').val();
+
+                $(icon).parent().prev().children(':nth-child(2)').replaceWith(newDivContent);
+                $("#main-menu span[fid='"+$(icon).attr('editFolderId') +"']").text(newFoldername);
+                $("#folderList").find('a[folderid=' +$(icon).attr('editFolderId') + ']').text(newFoldername);
+                if($("#currentFolder ").text().trim()==$(icon).attr('value'))
+                    $("#currentFolder ").text(newFoldername);
+                    
+
+            },
+            error: function(errResponse) {
+                console.log(errResponse);
+                $('#error-save-modal').modal('show');
+                    
+            }
+        });
+    }
+    
+
+}
 
 function deleteFolder(name) {
-    //var id =$(name).attr('idFolder');
+    
     var idFolder = $(name).attr('idFolder');
-    //console.log($(name).attr('idFolder'));
-    //var name =$(name).attr('value');
     
 
     $.ajax({
@@ -111,6 +170,7 @@ function deleteFolder(name) {
             console.log("idFolder",idFolder);
             $("#main-menu").find('span[fid="' + idFolder + '"]').parent().parent().remove()
             $("#manageFolderList").find('li[folderid="' + idFolder + '"]').remove();
+            $("#folderList").find('a[folderid=' +idFolder + ']').parent().remove(); 
             $(".gui-folder").find('li').children().trigger("click");
         }
     });

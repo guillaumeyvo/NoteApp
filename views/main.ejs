@@ -86,6 +86,7 @@
 							<ul class="dropdown-menu animation-dock">
 								<% if(account_type == 'local'){ %>
 								<li><a href="#"  id="uploadlink"><i class="fa fa-fw fa-user"></i> Changer sa photo de profil</a></li>
+								<li><a href="#" id="userFolder"><i class="fa fa-fw fa-user"></i> Gerer les dossiers</a></li>
 
 								<!-- <span>Upload</span>
 						    <input type="file" class="upload" /> -->
@@ -542,6 +543,58 @@
 		</div><!-- /.modal -->
 		<!-- END SIMPLE MODAL MARKUP -->
 
+
+
+		<div class="modal fade" id="modaltest" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="simpleModalLabel">Gerer les dossiers</h4>
+					</div>
+					<div class="modal-body">
+						<div class="alert alert-danger" role="alert">
+							La suprression est <strong>definitive</strong> et supprimera par la meme occasion toutes les notes du dossier
+						</div>
+						<ul class="list" id="manageFolderList">
+							<li class="tile">
+								<a class="tile-content ink-reaction" href="#2">
+									<div class="tile-icon">
+										<i class="fa fa-folder"></i>
+									</div>
+									<div class="tile-text"><input type="text" placeholder="Nom du dossier" class="form-control" id="foldername" value="jjj" ></div>
+								</a>
+								<a class="btn btn-flat ink-reaction">
+									<i class="fa fa-remove"></i>
+								</a>
+								<a class="btn btn-flat ink-reaction">
+									<i class="fa fa-check-square"></i>
+								</a>	
+								<a class="btn btn-flat ink-reaction">
+									<i class="fa fa-trash-o"></i>
+								</a>
+							</li>
+							<li class="tile">
+								<a class="tile-content ink-reaction" href="#2">
+									<div class="tile-icon">
+										<i class="fa fa-folder"></i>
+									</div>
+									<div class="tile-text">Abbey Johnson</div>
+								</a>
+								<a class="btn btn-flat ink-reaction">
+									<i class="fa fa-trash"></i>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		<!-- END SIMPLE MODAL MARKUP -->
+
 		<!-- BEGIN JAVASCRIPT -->
 		<script src="../../assets/js/libs/jquery/jquery-1.11.2.min.js"></script>
 		<script src="../../assets/js/libs/jquery/jquery-migrate-1.2.1.min.js"></script>
@@ -590,6 +643,11 @@
 
 				$("#searchbtn").on('click', function() {
 			   		search();
+				});
+
+				$("#userFolder").on('click', function() {
+					$("#modaltest").modal('show');
+			   		
 				});
 				$("#uploadlink").on('click', function() {
 			   		$("#uploadInput").click();
