@@ -2,7 +2,7 @@
 //CKEDITOR.instances['editor1'].setData("ssss")
 
 function chat(){
-    
+    //push from chat
 }
 
 function myFunction() {
