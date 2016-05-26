@@ -3,6 +3,7 @@
 
 function chat(){
     //push from chat
+    // second comment from chat
 }
 
 function myFunction() {
