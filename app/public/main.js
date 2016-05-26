@@ -1,5 +1,10 @@
 //CKEDITOR.instances['editor1'].getData()
 //CKEDITOR.instances['editor1'].setData("ssss")
+
+function chat(){
+    
+}
+
 function myFunction() {
     console.log("AAAAAAAAAA");
 
