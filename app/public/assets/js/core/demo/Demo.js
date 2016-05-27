@@ -145,7 +145,9 @@
 	};
 	
 	p._handleChatMessage = function (e) {
+
 		var input = $(e.currentTarget);
+		//console.log(input);
 		
 		// Detect enter
 		if (e.keyCode === 13) {

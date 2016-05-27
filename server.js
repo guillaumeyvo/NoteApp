@@ -6,6 +6,8 @@ var passport = require('passport');
 var flash    = require('connect-flash');
 var path 	 = require('path');
 var db = require('./config/database.js');
+var http = require('http').Server(app);
+var io =require('socket.io')(http);
 
 var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -43,6 +45,11 @@ require('./app/folder_routes.js')(app, passport); // load our routes and pass in
 // launch ======================================================================
 
 db.sequelize.sync(/*{force : true}*/).then(function() {
-	app.listen(port);
+	io.on('connection', function(socket){
+		socket.on('chat message', function(msg){
+			io.emit('chat message', msg);
+		});
+	});
+	http.listen(port);
 	console.log('The magic happens on port ' + port);
 });
