@@ -47,6 +47,7 @@ require('./app/folder_routes.js')(app, passport); // load our routes and pass in
 db.sequelize.sync(/*{force : true}*/).then(function() {
 	io.on('connection', function(socket){
 		socket.on('chat message', function(msg){
+
 			io.emit('chat message', msg);
 		});
 	});

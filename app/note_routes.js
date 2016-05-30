@@ -7,7 +7,7 @@ var randtoken = require('rand-token');
 
 module.exports = function(app, passport) {
 
-    app.get('/notedetail/:id', function(req, res) {
+    app.get('/notedetail/:id', middleware.isLoggedIn, function(req, res) {
         var noteId = parseInt(req.params.id, 10);
         db.note.findOne({
             where: {
@@ -90,7 +90,7 @@ module.exports = function(app, passport) {
 
     });
 
-    app.delete('/notedelete/:id', function(req, res) {
+    app.delete('/notedelete/:id', middleware.isLoggedIn, function(req, res) {
         var noteId = parseInt(req.params.id, 10);
         var folderId;
 
@@ -136,7 +136,7 @@ module.exports = function(app, passport) {
 
 
 
-    app.get('/notes/:folderId', function(req, res) {
+    app.get('/notes/:folderId', middleware.isLoggedIn, function(req, res) {
         var folderId = parseInt(req.params.folderId, 10);
         db.note.findAll({
             where: {
@@ -152,7 +152,7 @@ module.exports = function(app, passport) {
     });
 
 
-    app.post('/notesearch', function(req, res) {
+    app.post('/notesearch', middleware.isLoggedIn, function(req, res) {
         console.log("=========================");
         console.log(req.isAuthenticated());
         console.log(req.body);
@@ -198,9 +198,6 @@ module.exports = function(app, passport) {
                     }]
                 }, ]
             }).then(function(note) {
-                console.log("/////////////////////////////////////////////////////////");
-                console.log(note.dataValues);
-                console.log("/////////////////////////////////////////////////////////");
                 res.send(note);
             }, function(e) {
                 console.log(e);
@@ -240,9 +237,6 @@ module.exports = function(app, passport) {
                     }]
                 }, ]
             }).then(function(note) {
-                console.log("/////////////////////////////////////////////////////////");
-                console.log(note);
-                console.log("/////////////////////////////////////////////////////////");
                 res.send(note);
             }, function(e) {
                 console.log(e);

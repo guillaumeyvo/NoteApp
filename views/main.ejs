@@ -101,7 +101,7 @@
 							</a>
 						</li>
 						<li>
-							<a class="btn btn-icon-toggle btn-default" href="#offcanvas-chat" data-toggle="offcanvas" data-backdrop="false">
+							<a class="btn btn-icon-toggle btn-default" id="chatMessageIcon" href="#offcanvas-chat" data-toggle="offcanvas" data-backdrop="false">
 								<i class="md md-chat"></i>
 							</a>
 						</li>
@@ -658,6 +658,11 @@
 				$("#userFolder").on('click', function() {
 					getFolderManageModal();
 					$("#simpleModal").modal('show');
+			   		
+				});
+
+				$("#chatMessageIcon").on('click', function() {
+					$(".md-chat .badge").remove();
 			   		
 				});
 				$("#uploadlink").on('click', function() {

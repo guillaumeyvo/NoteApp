@@ -48,7 +48,7 @@ module.exports = function(app, passport) {
     // =====================================
     // show the login form
 
-    app.get('/new', isLoggedIn, function(req, res) {
+    app.get('/new', middleware.isLoggedIn, function(req, res) {
         //     console.log("=============CONTENU DE LA SESSION=================");
         // console.log(req.user);
         // console.log("=============FIN DU CONTENU DE LA SESSION=================");

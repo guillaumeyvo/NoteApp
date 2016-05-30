@@ -78,7 +78,7 @@ module.exports = function(app, passport) {
 
 
 
-
+    // when new folder is created
     app.post('/folders', function(req, res) {
         console.log(req.body);
         db.folder.create(req.body).then(function(folder) {

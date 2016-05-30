@@ -1,50 +1,40 @@
 //CKEDITOR.instances['editor1'].getData()
 //CKEDITOR.instances['editor1'].setData("ssss")
 var socket = io();
+// console.log(socket);
 var clientId = socket.id;
 
 socket.on('chat message', function(msg){
-    //if()
-    
-        console.log(msg);
-        if(msg.senderId != socket.id)
-        {
-            console.log("different from sender");
-            $(".md-chat").append("<sup class='badge style-danger'>1</sup>");
-            var html = '';
-            html += '<li>';
-            html += '   <div class="chat">';
-            html += '       <div class="chat-avatar"><img class="img-circle" src="' + msg.avatar + '" alt=""></div>';
-            html += '       <div class="chat-body">';
-            html += '           ' + msg.message;
-            html += '           <small>' + msg.time + '</small>';
-            html += '       </div>';
-            html += '   </div>';
-            html += '</li>';
-            $('.list-chats').prepend(html);
-        }
-            
-        
+    console.log("socket");
+    if(msg.senderId != socket.id) // if not the message sender
+    {
+        addChatMessageReceiver(msg);
+    }
 });
+
+function addChatMessageReceiver(msg){
+    $(".md-chat").append("<sup class='badge style-danger'>1</sup>");
+        var html = '';
+        html += '<li>';
+        html += '   <div class="chat">';
+        html += '       <div class="chat-avatar"><img class="img-circle" src="' + msg.avatar + '" alt=""></div>';
+        html += '       <div class="chat-body">';
+        html += '           ' + msg.message;
+        html += '           <small>' + msg.time + '</small>';
+        html += '       </div>';
+        html += '   </div>';
+        html += '</li>';
+        $('.list-chats').prepend(html);
+}
 
 function addChatMessageSender(e){
     if ( e.which == 13 ) {
         e.preventDefault();
-        
-        //console.log("Enter pressed");
-        //console.log(e);
         var input = $(e.currentTarget);
-        //console.log("input val",input.val());
         var currentTime = new Date().getHours() + ':' + new Date().getMinutes();
-        //var demoImage = $('.list-chats li img').attr('src');
         var avatar = $("#avatar").attr("src")
         var message = {senderId : socket.id,message:input.val(),time:currentTime,avatar:avatar}
         socket.emit('chat message', message);
-        //socket.broadcast.emit('chat message', input.val());
-        
-        
-
-        // Create html
         var html = '';
         html += '<li>';
         html += '   <div class="chat">';
@@ -68,10 +58,6 @@ function addChatMessageSender(e){
 
         // Refresh for correct scroller size
         $('.offcanvas').trigger('refresh');
-    }
-    else{
-        //e.preventDefault();
-        //console.log("Other pressed");
     }
 }
 

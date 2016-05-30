@@ -21,6 +21,7 @@ module.exports = function(app, passport) {
     // =====================================
     // HOME PAGE (with login links) ========
     // =====================================
+
     app.get('/', function(req, res) {
         if (req.isAuthenticated()) {
             if (req.user.account_type == "local") {
