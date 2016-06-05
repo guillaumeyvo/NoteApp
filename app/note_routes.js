@@ -14,11 +14,11 @@ module.exports = function(app, passport) {
                 id: noteId
             }
         }).then(function(note) {
-            console.log(note);
+            //console.log(note);
             res.send(note);
         }, function(e) {
-            console.log("error");
-
+            console.log("notedetail error");
+            console.log(e);
         });
     });
 
@@ -72,7 +72,7 @@ module.exports = function(app, passport) {
     });
 
     app.put('/updateNoteFolder/:id', middleware.isLoggedIn, function(req, res) {
-        var noteId = parseInt(req.params.id, 10);
+        var noteId = req.params.id;
         db.note.findOne({
             where: {
                 id: noteId
@@ -91,7 +91,7 @@ module.exports = function(app, passport) {
     });
 
     app.delete('/notedelete/:id', middleware.isLoggedIn, function(req, res) {
-        var noteId = parseInt(req.params.id, 10);
+        var noteId = req.params.id;
         var folderId;
 
         db.note.findOne({
@@ -137,7 +137,7 @@ module.exports = function(app, passport) {
 
 
     app.get('/notes/:folderId', middleware.isLoggedIn, function(req, res) {
-        var folderId = parseInt(req.params.folderId, 10);
+        var folderId = req.params.folderId;
         db.note.findAll({
             where: {
                 folderId: folderId
@@ -152,13 +152,16 @@ module.exports = function(app, passport) {
     });
 
     app.post('/shareNote', middleware.isLoggedIn, function(req, res) {
-        var folderId = parseInt(req.params.folderId, 10);
+        var folderId = req.params.folderId;
         db.user.findAll({
             where: {
                 email: _.pick(req.body, 'list').list
             }
         }).then(function(users) {
             console.log(users);
+            for(var i =0;i<users.length;i++){
+
+            }
             res.send(users);
         }, function(e) {
             console.log("error");
