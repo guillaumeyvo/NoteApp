@@ -151,6 +151,21 @@ module.exports = function(app, passport) {
         });
     });
 
+    app.post('/shareNote', middleware.isLoggedIn, function(req, res) {
+        var folderId = parseInt(req.params.folderId, 10);
+        db.user.findAll({
+            where: {
+                email: _.pick(req.body, 'list').list
+            }
+        }).then(function(users) {
+            console.log(users);
+            res.send(users);
+        }, function(e) {
+            console.log("error");
+
+        });
+    });
+
 
     app.post('/notesearch', middleware.isLoggedIn, function(req, res) {
         console.log("=========================");

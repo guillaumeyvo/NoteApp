@@ -501,7 +501,6 @@ function updateNote() {
 
 }
 
-
 function autoSave() {
     //console.log("Inside autoSave");
     var notedata = {
@@ -681,8 +680,65 @@ function search() {
 
 }
 
+function addDestinator(){
+    var email =$("#sendTo").val();
+    if(validateEmail(email))
+    {
+        var tag =`<a class="btn btn-xs btn-primary">${email}<i class="fa fa-close" onclick="removeSendToTag(this)"></i></a> `;
+        $(".list-tags").append(tag);
+        $("#sendTo").val('');
+        if($("#btShare").is(":disabled"))
+            $("#btShare").prop('disabled', false);
+    }
+    else
+    {
+       $("#errorShareDiv").show();
+    }
+    
 
-// function deletenote(a){
+
+}
+
+function validateEmail(email){
+    var reg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/igm;
+    return reg.test(email);
+}
+
+function removeSendToTag(a){
+    $(a).parent().remove();
+    if($(".list-tags").children().length==0)
+        $("#btShare").prop('disabled', true);
+}
+
+function shareNote(){
+    $('#shareModal').modal('show');
+}
+
+function shareToSelectedUser(){
+    var destinatorList=[];
+    $(".list-tags").children().each(function(){
+            //console.log($(this).text());
+            destinatorList.push($(this).text());
+        });
+
+    var data = {
+        list:destinatorList
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/shareNote',
+        data: data,
+        success: function(data) {
+            //myFunction();
+            console.log(data);
+            
+        }
+    });
+
+}
+
+// function denletenote(a){
 //     console.log(a);
 //     //console.log(a.id);
 //     //console.log("lien",a.children.length);

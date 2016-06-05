@@ -162,6 +162,7 @@
 											<a class="btn btn-icon-toggle btn-default" onclick="addNewNote()"><i class="md md-add"></i></a>
 											<a id="toastTest" class="btn btn-icon-toggle btn-default" onclick="deleteNote()"><i class="md md-delete"></i></a>
 											<a onclick="updateNote()"  class="btn btn-icon-toggle btn-default"><i class="md md-save"></i></a>
+											<a onclick="shareNote()"  class="btn btn-icon-toggle btn-default"><i class="md md-share"></i></a>
 										</div>
 										<span class="pull-right text-default-light" id="saveMessage"></span>
 										<hr/>
@@ -205,6 +206,37 @@
 
 					<!-- BEGIN MAIN MENU -->
 					<ul id="main-menu" class="gui-controls">
+						<li class="gui-folder">
+							<a>
+								<div class="gui-icon"><i class="fa fa-puzzle-piece fa-fw"></i></div>
+								<span class="title">UI elements</span>
+							</a>
+							<!--start submenu -->
+							<ul>
+								<li><a href="../../html/ui/colors.html" ><span class="title">Colors</span></a></li>
+								<li><a href="../../html/ui/typography.html" ><span class="title">Typography</span></a></li>
+								<li><a href="../../html/ui/cards.html" ><span class="title">Cards</span></a></li>
+								<li><a href="../../html/ui/buttons.html" ><span class="title">Buttons</span></a></li>
+								<li><a href="../../html/ui/lists.html" ><span class="title">Lists</span></a></li>
+								<li><a href="../../html/ui/tabs.html" ><span class="title">Tabs</span></a></li>
+								<li><a href="../../html/ui/accordions.html" class="active"><span class="title">Accordions</span></a></li>
+								<li><a href="../../html/ui/messages.html" ><span class="title">Messages</span></a></li>
+								<li><a href="../../html/ui/offcanvas.html" ><span class="title">Off-canvas</span></a></li>
+								<li><a href="../../html/ui/grid.html" ><span class="title">Grid</span></a></li>
+								<li class="gui-folder">
+									<a href="javascript:void(0);">
+										<span class="title">Icons</span>
+									</a>
+									<!--start submenu -->
+									<ul>
+										<li><a href="../../html/ui/icons/materialicons.html" ><span class="title">Material Design Icons</span></a></li>
+										<li><a href="../../html/ui/icons/fontawesome.html" ><span class="title">Font Awesome</span></a></li>
+										<li><a href="../../html/ui/icons/glyphicons.html" ><span class="title">Glyphicons</span></a></li>
+										<li><a href="../../html/ui/icons/skycons.html" ><span class="title">Skycons</span></a></li>
+									</ul><!--end /submenu -->
+								</li><!--end /menu-li -->
+							</ul><!--end /submenu -->
+						</li><!--end /menu-li -->
 
             <% for(var i=0; i<data.length; i++) { %>
 						<li class="gui-folder">
@@ -226,6 +258,7 @@
             
 
             <% } %>
+
 
 					</ul><!--end .main-menu -->
 					<!-- END MAIN MENU -->
@@ -593,6 +626,45 @@
 
 
 
+		<div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="simpleModalLabel">Partager une note</h4>
+					</div>
+					<div class="modal-body ">
+						<div class="alert alert-danger" role="alert" id="errorShareDiv" style="display:none;">
+							Addresse email incorrecte
+						</div>
+						<ul class="list">
+							<li class="tile">
+								<a class="tile-content ink-reaction" href="#2">
+									<div class="tile-icon">
+										<i class="fa fa-user"></i>
+									</div>
+									<div class="tile-text">
+										<input type="text" placeholder="Email du destinataire" class="form-control" id="sendTo">
+									</div>
+								</a>
+								<a class="btn btn-flat ink-reaction">
+									<i class="fa fa-user-plus" onclick="addDestinator()"></i>
+								</a>
+							</li>
+						</ul>
+						<div class="list-tags" style="margin-left:20px;">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+		          		<button type="button" disabled class="btn btn-primary" id="btShare" data-dismiss="modal" onclick="shareToSelectedUser()">Partager</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+
 		
 		<!-- END SIMPLE MODAL MARKUP -->
 
@@ -677,16 +749,21 @@
 
 			    $(".gui-folder").find('li.active:first').children().trigger("click");
 
+			    $("#sendTo").keydown(function(){
+			    	if($("#errorShareDiv").is(":visible"))
+			        	$("#errorShareDiv").hide();
+			    });
+
 			});
 
 			$('#dSummernote').summernote({
 			    height: 420,
 			    placeholder: 'write here...',
-			    onChange: test
+			    onChange: save
 			});
 
 
-			function test()
+			function save()
 			{
 				clearTimeout(timeOutFunction);
 				var attr = $("#noteTitle").attr("noteid");
