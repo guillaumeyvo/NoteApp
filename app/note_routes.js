@@ -8,7 +8,7 @@ var randtoken = require('rand-token');
 module.exports = function(app, passport) {
 
     app.get('/notedetail/:id', middleware.isLoggedIn, function(req, res) {
-        var noteId = parseInt(req.params.id, 10);
+        var noteId = req.params.id;
         db.note.findOne({
             where: {
                 id: noteId
