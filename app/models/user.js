@@ -1,9 +1,18 @@
 var bcrypt   = require('bcrypt-nodejs');
-
-
+var randtoken = require('rand-token');
 
 module.exports = function(sequelize, DataTypes) {
 	var user= sequelize.define('User', {
+		id: {
+		    type: DataTypes.UUID,
+		    defaultValue: function() {
+		    	var uid = require('rand-token').uid;
+	            var id = uid(16);
+		      return id;
+		    },
+		    primaryKey: true,
+		    allowNull: false 
+	  	},
 		email: {
 			type: DataTypes.STRING,
 			allowNull: false,
