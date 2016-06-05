@@ -152,21 +152,41 @@ module.exports = function(app, passport) {
     });
 
     app.post('/shareNote', middleware.isLoggedIn, function(req, res) {
-        var folderId = req.params.folderId;
-        db.user.findAll({
-            where: {
-                email: _.pick(req.body, 'list').list
-            }
-        }).then(function(users) {
-            console.log(users);
-            for(var i =0;i<users.length;i++){
+        //var folderId = req.params.folderId;
+        db.note.findOne({
+            where:{
+                id:req.body.noteId
+            }}).then(function(note){
 
-            }
-            res.send(users);
-        }, function(e) {
-            console.log("error");
+                   db.user.findAll({
+                        where: {
+                            email: _.pick(req.body, 'list').list
+                        }
+                    }).then(function(users) {
+                        console.log(users);
+                        for(var i =0;i<users.length;i++){
+                            db.shared_note.create({'noteOwnerEmail':req.body.noteOwnerEmail,'receiverEmail':users[i].email}).then(function(shareNote){
+                            note.addShared_note(shareNote);
+                            },
+                            function(e){
+                                console.log("error in promise for shareNote");
+                                console.log(e);
+                            });
 
-        });
+                        }
+                        //res.send(users);
+                    }, 
+                    function(e) {
+                        console.log("error in promise for user");
+                        console.log(e);
+                    });
+                            
+                        },function(e){
+                            console.log("error in promise for note");
+                            console.log(e);
+
+                        });
+
     });
 
 

@@ -41,7 +41,7 @@ module.exports = function(app, passport) {
 
 
     app.delete('/folderDelete/:id', function(req, res) {
-        var folderId = parseInt(req.params.id, 10);
+        var folderId = req.params.id;
         console.log(folderId);
         db.folder.destroy({
             where: {

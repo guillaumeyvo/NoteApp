@@ -717,12 +717,13 @@ function shareNote(){
 function shareToSelectedUser(){
     var destinatorList=[];
     $(".list-tags").children().each(function(){
-            //console.log($(this).text());
             destinatorList.push($(this).text());
         });
 
     var data = {
-        list:destinatorList
+        list:destinatorList,
+        noteOwnerEmail:$(".profile-info").text().trim(),
+        noteId: $("#noteTitle").attr("noteid")
     };
 
     $.ajax({
