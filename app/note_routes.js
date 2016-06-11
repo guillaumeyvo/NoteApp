@@ -52,6 +52,85 @@ module.exports = function(app, passport) {
     });
 
 
+    app.post('/saveChatMessage',middleware.isLoggedIn, function(req, res) {
+        console.log(req.body);
+        db.chat_message.create(_.pick(req.body, 'message', 'senderEmail','senderAvatar')).then(function(chat_message){
+            
+            db.note.findOne({
+            where:{
+                id:req.body.noteId
+            }}).then(function(note){
+                note.addChats(chat_message);
+                 res.send(note);
+            },function(e){
+                        console.log("error");
+                        console.log(e);
+
+            });
+
+          
+
+        },function(e){
+
+        });
+            
+             
+            // res.render('create.ejs', {
+            //     user : req.user // get the user out of session and pass to template
+            // });
+    });
+
+
+    app.post('/noteSharedByUser', middleware.isLoggedIn, function(req, res) {
+       db.shared_note.findAll({
+                        where:{
+                            noteOwnerEmail: req.body.userEmail
+                        },
+                        include:[{
+                                model:db.note,
+                                include:[{
+                                    model:db.folder,
+                                    include :[{
+                                        model:db.user
+                                    }]
+                                }
+                                ]
+                            }
+                        ]
+                    }).then(function(sharenote){
+                             res.send(sharenote);
+                        },
+                        function(e){
+
+                        });
+    });    
+
+    app.post('/notesSharedWithUser', middleware.isLoggedIn, function(req, res) {
+
+             db.shared_note.findAll({
+                        where:{
+                            receiverEmail: req.body.userEmail
+                        },
+                        include:[{
+                                model:db.note,
+                                include:[{
+                                    model:db.folder,
+                                    include :[{
+                                        model:db.user
+                                    }]
+                                }
+                                ]
+                            }
+                        ]
+                    }).then(function(sharenote){
+                             res.send(sharenote);
+                        },
+                        function(e){
+
+                        });
+    });
+
+
     app.put('/updateNote', middleware.isLoggedIn, function(req, res) {
         db.note.findOne({
             where: {
@@ -151,6 +230,26 @@ module.exports = function(app, passport) {
         });
     });
 
+
+    app.post('/loadChatData', function(req, res) {
+        
+        db.chat_message.findAll({
+            where: {
+                noteId: req.body.noteId
+                //noteId: 'xtlOSw2yHSoXfD5d'
+            },
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        }).then(function(notes) {
+            //console.log(folders);
+            res.send(notes);
+        }, function(e) {
+            console.log("error");
+
+        });
+    });
+
     app.post('/shareNote', middleware.isLoggedIn, function(req, res) {
         //var folderId = req.params.folderId;
         db.note.findOne({
@@ -191,15 +290,7 @@ module.exports = function(app, passport) {
 
 
     app.post('/notesearch', middleware.isLoggedIn, function(req, res) {
-        console.log("=========================");
-        console.log(req.isAuthenticated());
-        console.log(req.body);
-        //_.pick(req.body, 'folder').folder
-        console.log(_.pick(req.body, 'email').email);
-        console.log(_.pick(req.body, 'keyword').keyword);
-        console.log(_.pick(req.body, 'account').account);
-
-        console.log("=========================");
+  
         //var search = req.params.search;
         var search = _.pick(req.body, 'keyword').keyword;
         var email = _.pick(req.body, 'email').email;

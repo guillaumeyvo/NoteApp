@@ -1,11 +1,42 @@
-//CKEDITOR.instances['editor1'].getData()
-//CKEDITOR.instances['editor1'].setData("ssss")
 var socket = io();
-// console.log(socket);
 var clientId = socket.id;
 
+
+
+function joinRoom(){
+    var data = {
+            userEmail: $(".profile-info").text().trim()
+        };
+        $.ajax({
+            type: 'POST',
+            url: '/getUserRoomsId',
+            data: data,
+            success: function(data) {
+
+                for(var i = 0;i<data.length;i++){
+                    socket.emit('joinRoom', data[i].noteId);
+                }
+                
+                    //socket.emit('adduser', prompt("What's your name?"));
+
+            },
+            error: function(errResponse) {
+                console.log("error while connecting to the socket");
+                console.log(errResponse);
+                
+                    
+            }
+        });
+}
+
+socket.on('connect', function(){
+        // call the server-side function 'adduser' and send one parameter (value of prompt)
+        console.log("connected to socket io");
+        
+        
+    });
+
 socket.on('chat message', function(msg){
-    console.log("socket");
     if(msg.senderId != socket.id) // if not the message sender
     {
         addChatMessageReceiver(msg);
@@ -15,7 +46,11 @@ socket.on('chat message', function(msg){
 function addChatMessageReceiver(msg){
     $(".md-chat").append("<sup class='badge style-danger'>1</sup>");
         var html = '';
-        html += '<li>';
+        if (msg.senderEmail == $(".profile-info").text().trim())
+            html += '<li>';
+        else
+            html += "<li class='chat-left'>";
+
         html += '   <div class="chat">';
         html += '       <div class="chat-avatar"><img class="img-circle" src="' + msg.avatar + '" alt=""></div>';
         html += '       <div class="chat-body">';
@@ -32,13 +67,30 @@ function addChatMessageSender(e){
         e.preventDefault();
         var input = $(e.currentTarget);
         var currentTime = new Date().getHours() + ':' + new Date().getMinutes();
-        var avatar = $("#avatar").attr("src")
-        var message = {senderId : socket.id,message:input.val(),time:currentTime,avatar:avatar}
+        var avatar = $("#avatar").attr("src");
+        var roomId=$("#chatMessage").attr('roomId');
+        var message = {senderId : socket.id,message:input.val(),time:currentTime,avatar:avatar,roomId:roomId};
+
+        var messageData = {
+            message: input.val(),
+            senderEmail:$(".profile-info").text().trim(),
+            senderAvatar:avatar,
+            noteId: roomId
+        };
+        console.log(messageData);
+        $.ajax({
+            type: 'POST',
+            url: '/saveChatMessage',
+            data: messageData,
+            success: function(data) {
+            }
+        });
+
         socket.emit('chat message', message);
         var html = '';
         html += '<li>';
         html += '   <div class="chat">';
-        html += '       <div class="chat-avatar"><img class="img-circle" src="' + avatar + '" alt=""></div>';
+        html += '       <div class="chat-avatar"><img class="img-circle" src="' + avatar + '" title="'+$(".profile-info").text().trim()+'"></div>';
         html += '       <div class="chat-body">';
         html += '           ' + input.val();
         html += '           <small>' + currentTime + '</small>';
@@ -246,10 +298,13 @@ function deleteFolder(name) {
             // find id with name and remove it with jquery 
             //$("#main-menu").find('.gui-folder:contains('+name+')').remove();
             console.log("idFolder",idFolder);
-            $("#main-menu").find('span[fid="' + idFolder + '"]').parent().parent().remove()
+            $("#main-menu").find('span[fid="' + idFolder + '"]').parent().parent().remove();
             $("#manageFolderList").find('li[folderid="' + idFolder + '"]').remove();
             $("#folderList").find('a[folderid=' +idFolder + ']').parent().remove(); 
-            $(".gui-folder").find('li').children().trigger("click");
+            //$(".gui-folder").find('li').children().trigger("click");
+            $(".gui-folder").first().find('li').first().find('a').click(); // triggers click on the first note of the menu
+            $(".gui-folder.expanded").removeClass("expanded");
+            $(".gui-folder").first().addClass("expanded");
         }
     });
 
@@ -519,6 +574,9 @@ function autoSave() {
             var d = new Date();
             $("#saveMessage").empty();
             $("#saveMessage").text("Enregistre automatiquement a " + d.getHours() + " h " + d.getMinutes() + " mm" + d.getSeconds() + " s");
+            setTimeout(function(){
+                $("#saveMessage").empty(); // clearing save message
+            }, 3000);
 
         }
     });
@@ -526,7 +584,7 @@ function autoSave() {
 }
 
 function saveNewNote() { //save button
-    if ($('#foldername').prop("disabled")) {
+    if ($('#foldername').prop("disabled")) { // si l'input pour la saise du dossier a creer est disabled donc l'utilisateur a choisi un dossier existant
 
         var folder = $("#sel1 option:selected").text();;
         var notedata = {
@@ -554,7 +612,7 @@ function saveNewNote() { //save button
         });
 
 
-    } else {
+    } else { // when a new folder is created
 
         console.log("Inside else");
         $("#foldername").val();
@@ -570,6 +628,7 @@ function saveNewNote() { //save button
             url: '/folders',
             data: foldername,
             success: function(data) {
+                console.log("folder",data)
                 var folderIcon = `<li class='gui-folder'>
                               <a>
                                 <div class='gui-icon'><i class='md md-folder'></i></div>
@@ -579,7 +638,8 @@ function saveNewNote() { //save button
                                 
                               </ul>
                               </li>`;
-                $("#main-menu").append(folderIcon);
+                
+                $(folderIcon).insertBefore($("#sharedFolder")); // ajout du dossier avant le dossier partage
 
 
                 var folder = data.name;
@@ -608,6 +668,7 @@ function saveNewNote() { //save button
 
                         var dropdownFolder =`<li><a href="#" folderid='${folderId}' onclick="changeNoteFolder(this)">${folder}</a></li>`;
                         $("#folderList").append(dropdownFolder);
+                        $("#folderList").find('a[folderid=' + notedata.folder + ']').trigger("click");
                         $("#currentFolder").show(); // in case it's hidden
                     }
                 });
@@ -680,9 +741,15 @@ function search() {
 
 }
 
+
 function addDestinator(){
     var email =$("#sendTo").val();
-    if(validateEmail(email))
+    if(email == $(".profile-info").text().trim()){
+        $("#errorShareDiv").text("Impossible de partager une note avec vous même");
+        $("#errorShareDiv").show();
+    }
+
+    else if(validateEmail(email))
     {
         var tag =`<a class="btn btn-xs btn-primary">${email}<i class="fa fa-close" onclick="removeSendToTag(this)"></i></a> `;
         $(".list-tags").append(tag);
@@ -692,12 +759,14 @@ function addDestinator(){
     }
     else
     {
-       $("#errorShareDiv").show();
+        $("#errorShareDiv").text("Addresse email incorrecte");
+        $("#errorShareDiv").show();
     }
     
 
 
 }
+
 
 function validateEmail(email){
     var reg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/igm;
@@ -737,6 +806,128 @@ function shareToSelectedUser(){
         }
     });
 
+}
+
+
+function loadSharedNotes(parameter){
+    var url ;
+    if (parameter =='byUser') {
+        url ='/noteSharedByUser';
+    }
+    else
+        url='/notesSharedWithUser';
+
+    var data = {
+        userEmail:$(".profile-info").text().trim()
+    };
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data,
+        success: function(data) {
+            $("#sharedNotesList").empty();
+            if(data.length >0){
+
+                for(var i =0;i<data.length;i++){
+
+                    var day = new Date(data[i].note.createdAt).getDate();
+                    var month =new Date(data[i].note.createdAt).getMonth()+1;
+                    var year= new Date(data[i].note.createdAt).getFullYear();
+
+
+
+                    var note = `<li class='tile'>
+                    <a class='tile-content ink-reaction' href='#offcanvas-chat' onclick='loadChatData(&quot;${data[i].note.id}&quot;)' data-toggle='offcanvas' data-backdrop='false'>
+                    <div class="tile-icon">
+                    <img src='${data[i].note.folder.user.avatar}' alt='' />
+                    </div>
+                    <div class='tile-text'>
+                    ${data[i].note.title}
+                    <small>Partagée le ${day}/${month}/${year} </small>
+                    </div>
+                    </a>
+                    </li>`;
+                    $("#sharedNotesList").append(note);
+                }
+            }
+            else{
+                    var note = `<li class='tile'>
+                    <a class='tile-content ink-reaction'  data-toggle='offcanvas' data-backdrop='false'>
+                    <div class='tile-text'>
+                    Vous n&#39;avez pas encore partage de notes
+                    </div>
+                    </a>
+                    </li>`;
+                    $("#sharedNotesList").append(note);
+
+            }
+
+
+
+
+         }
+    });
+    
+}
+
+function loadMessageChat(){
+    loadChatData($("#noteTitle").attr("noteid"));
+}
+
+
+
+function loadChatData(noteId){
+    console.log("noteId",noteId);
+    $("#offcanvas-chat").css('transform', 'translate(-480px, 0px)');
+    $("#offcanvas-chat").addClass('active');
+
+    $("#offcanvas-chat-list").css('transform','');
+    $("#offcanvas-chat-list").removeClass("active");
+
+    $("#offcanvas-chat .offcanvas-tools .active").removeClass("active");
+    $("#chatMessage").attr('roomId',noteId);
+
+    var data = {
+       
+        noteId: noteId
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/loadChatData',
+        data: data,
+        success: function(data) {
+            //myFunction();
+            $('.list-chats').empty();
+
+            for(var i=0;i<data.length;i++){
+                var day = new Date(data[i].createdAt).getDate();
+                var month =new Date(data[i].createdAt).getMonth()+1;
+                var year= new Date(data[i].createdAt).getFullYear();
+                var minute= new Date(data[i].createdAt).getMinutes();
+                var hour= new Date(data[i].createdAt).getHours();
+                var html = '';
+                if (data[i].senderEmail == $(".profile-info").text().trim())
+                    html += '<li>';
+                else
+                    html += "<li class='chat-left'>";
+
+                html += '   <div class="chat">';
+                html += '       <div class="chat-avatar"><img class="img-circle" src="' + data[i].senderAvatar + '" title="'+data[i].senderEmail+'"></div>';
+                html += '       <div class="chat-body">';
+                html += '           ' + data[i].message;
+                html += '           <small>' + day + '/' + month + '/' + year + ' ' + hour + ':' + minute + '</small>';
+                html += '       </div>';
+                html += '   </div>';
+                html += '</li>';
+                $('.list-chats').append(html);
+            }
+            
+
+        
+            
+        }
+    });
 }
 
 // function denletenote(a){

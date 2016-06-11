@@ -62,17 +62,62 @@ module.exports = function(app, passport) {
                     }, // load all pictures
                 ]
             }).then(function(data) {
-                    console.log("$$$$$$$$$$$$$$$$$$$$$$");
-                   console.log(data);
-                   console.log("$$$$$$$$$$$$$$$$$$$$$$");
 
-                    res.render('main.ejs', {
-                        user: req.user,
-                        avatar: req.user.avatar,
-                        email: req.user.email,
-                        data: data,
-                        account_type: req.user.account_type
-                    });
+
+                   db.user.findAll({
+                        where:{
+                            email: {
+                                       $ne:req.user.email
+                                    }
+                            
+                        },
+                        include: [{
+                            model: db.folder,
+                            include:[{
+                                model: db.note,
+                                include:[{
+                                    model:db.shared_note,
+                                    where:{
+                                        receiverEmail:req.user.email,
+                                        id: {
+                                       $ne:null
+                                    }
+                                    }
+                                }]
+                            }
+                                
+                            ]
+                        }]
+                    }).then(function(sharenote){
+
+
+                    console.log("**********************************");
+                    console.log("sharenote");
+                    console.log(sharenote);
+                    console.log("**********************************"); 
+
+
+                    console.log("**********************************");
+                    console.log("data");
+                    console.log(data);
+                    console.log("**********************************");
+
+                        res.render('main.ejs', {
+                            user: req.user,
+                            avatar: req.user.avatar,
+                            email: req.user.email,
+                            userNote: data,
+                            account_type: req.user.account_type,
+                            sharenote:sharenote
+                        });
+
+                        },
+                            function(e){
+
+                        });
+
+
+
                 },
                 function(e) {
                     console.log("error");
@@ -97,7 +142,7 @@ module.exports = function(app, passport) {
                         user: req.user,
                         avatar: req.user.avatar,
                         email: req.user.email,
-                        data: data,
+                        userNote: data,
                         account_type: req.user.account_type
                     });
                 },

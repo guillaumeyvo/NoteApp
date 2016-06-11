@@ -2,7 +2,7 @@ var bcrypt   = require('bcrypt-nodejs');
 var randtoken = require('rand-token');
 
 module.exports = function(sequelize, DataTypes) {
-	var user= sequelize.define('User', {
+	var user= sequelize.define('user', {
 		id: {
 		    type: DataTypes.UUID,
 		    defaultValue: function() {

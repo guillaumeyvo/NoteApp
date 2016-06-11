@@ -9,6 +9,10 @@ module.exports = function(sequelize, DataTypes) {
 		senderEmail: {
 			type: DataTypes.STRING,
 			allowNull: false
+		},
+		senderAvatar: {
+			type: DataTypes.STRING,
+			allowNull: false
 		}
 	});
 };

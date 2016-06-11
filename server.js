@@ -45,12 +45,26 @@ require('./app/folder_routes.js')(app, passport); // load our routes and pass in
 // launch ======================================================================
 
 db.sequelize.sync(/*{force : true}*/).then(function() {
+
 	io.on('connection', function(socket){
+		socket.on('joinRoom', function(room) { 
+			console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+			console.log('joining room', room);
+			console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+	        
+	        socket.room=room;
+	        socket.join(room); 
+    	})
 		socket.on('chat message', function(msg){
 
-			io.emit('chat message', msg);
+			io.in(msg.roomId).emit('chat message', msg);
+			//io.emit('chat message', msg);
+			
 		});
 	});
+
+
+
 	http.listen(port);
 	console.log('The magic happens on port ' + port);
 });
