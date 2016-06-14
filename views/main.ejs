@@ -95,7 +95,7 @@
                      </a>
                   </li>
                   <li>
-                     <a class="btn btn-icon-toggle btn-default" id="chatMessageIcon" href="#offcanvas-chat" onclick="loadCurrentMessage()" data-toggle="offcanvas" data-backdrop="false">
+                     <a class="btn btn-icon-toggle btn-default" id="chatMessageIcon" href="#offcanvas-chat" onclick="loadMessageChat()" data-toggle="offcanvas" data-backdrop="false">
                      <i class="md md-chat"></i>
                      </a>
                   </li>
@@ -290,7 +290,7 @@
             <!-- END OFFCANVAS SEARCH -->
             <div id="offcanvas-chat" class="offcanvas-pane style-default-light width-12">
                <div class="offcanvas-head style-default-bright">
-                  <header class="text-primary">Chat with Ann Laurens</header>
+                  <header class="text-primary">Chat collaboratif</header>
                   <div class="offcanvas-tools">
                      <a class="btn btn-icon-toggle btn-default-light pull-right" data-dismiss="offcanvas">
                      <i class="md md-close"></i>
@@ -302,13 +302,13 @@
                   <form class="form">
                      <div class="form-group floating-label">
                         <textarea name="chatMessage" id="chatMessage" class="form-control autosize" rows="1"></textarea>
-                        <label for="chatMessage">Leave a message</label>
+                        <label for="chatMessage">Ecrivez quelque chose</label>
                      </div>
                   </form>
                </div>
                <div class="offcanvas-body">
                   <ul class="list-chats">
-                     <li>
+                    <!--  <li>
                         <div class="chat">
                            <div class="chat-avatar"><img class="img-circle" src="../../assets/img/avatar1.jpg?1403934956" alt="" /></div>
                            <div class="chat-body" id="tt">
@@ -316,9 +316,8 @@
                               <small>10:03 pm</small>
                            </div>
                         </div>
-                        <!--end .chat -->
-                     </li>
-                     <li class="chat-left">
+                     </li> -->
+                  <!--    <li class="chat-left">
                         <div class="chat">
                            <div class="chat-avatar"><img class="img-circle" src="../../assets/img/avatar9.jpg?1404026744" alt="" /></div>
                            <div class="chat-body">
@@ -326,7 +325,17 @@
                               <small>10:02 pm</small>
                            </div>
                         </div>
-                        <!--end .chat -->
+                     </li> -->
+
+                     <li >
+                        <div style="text-align:center;">
+                           <button style="width:100%;font-size:10px;" type="button" class="btn btn-primary" id="btSave" >Charger plus de messages</button>
+                        </div>
+                     </li>
+                     <li >
+                        <div style="text-align:center;">
+                           Aucun message<br>Cette note n'a pas encore ete partagee.
+                        </div>
                      </li>
                   </ul>
                </div>
@@ -337,7 +346,7 @@
             <!-- BEGIN OFFCANVAS SEARCH -->
             <div id="offcanvas-chat-list" class="offcanvas-pane width-8">
                <div class="offcanvas-head">
-                  <header class="text-primary">Search</header>
+                  <header class="text-primary">Chat collaboratif</header>
                   <div class="offcanvas-tools">
                      <a class="btn btn-icon-toggle btn-default-light pull-right" data-dismiss="offcanvas">
                      <i class="md md-close"></i>
@@ -664,6 +673,14 @@
          $(document).ready(function() {
          //var socket = io();
          //console.log(socket);
+          $('#offcanvas-chat .nano.has-scrollbar').bind('scroll', function()
+                              {
+                                 console.log("inside scroll function");
+                                if($(this).scrollTop() + $(this).innerHeight()>=$(this)[0].scrollHeight)
+                                {
+                                  alert('end reached');
+                                }
+                              });
          
          
          $( "#chatMessage" ).keypress(function( e ) {

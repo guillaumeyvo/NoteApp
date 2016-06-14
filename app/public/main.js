@@ -350,6 +350,7 @@ function loadNote(a) {
             $(".note-editable").append(note.content);
             //console.log(note.folderId);
             $("#folderList").find('a[folderid=' + note.folderId + ']').trigger("click");
+            //loadChatData(note.id);
 
         }
     });
@@ -827,27 +828,34 @@ function loadSharedNotes(parameter){
         success: function(data) {
             $("#sharedNotesList").empty();
             if(data.length >0){
+                var noteIdList = [];
 
                 for(var i =0;i<data.length;i++){
+                    if(noteIdList.indexOf(data[i].note.id)==-1){ 
+                        noteIdList.push(data[i].note.id);
 
-                    var day = new Date(data[i].note.createdAt).getDate();
-                    var month =new Date(data[i].note.createdAt).getMonth()+1;
-                    var year= new Date(data[i].note.createdAt).getFullYear();
+                        var day = new Date(data[i].note.createdAt).getDate();
+                        var month =new Date(data[i].note.createdAt).getMonth()+1;
+                        var year= new Date(data[i].note.createdAt).getFullYear();
+
+                        var note = `<li class='tile'>
+                        <a class='tile-content ink-reaction' href='#offcanvas-chat' onclick='loadChatData(&quot;${data[i].note.id}&quot;)' data-toggle='offcanvas' data-backdrop='false'>
+                        <div class="tile-icon">
+                        <img src='${data[i].note.folder.user.avatar}' alt='' />
+                        </div>
+                        <div class='tile-text'>
+                        ${data[i].note.title}
+                        <small>Partagée le ${day}/${month}/${year} </small>
+                        </div>
+                        </a>
+                        </li>`;
+                        $("#sharedNotesList").append(note);
+
+                    }
+                    else
+                        continue; // if the note has been shared to multiple persons do not duplicate it in the list
 
 
-
-                    var note = `<li class='tile'>
-                    <a class='tile-content ink-reaction' href='#offcanvas-chat' onclick='loadChatData(&quot;${data[i].note.id}&quot;)' data-toggle='offcanvas' data-backdrop='false'>
-                    <div class="tile-icon">
-                    <img src='${data[i].note.folder.user.avatar}' alt='' />
-                    </div>
-                    <div class='tile-text'>
-                    ${data[i].note.title}
-                    <small>Partagée le ${day}/${month}/${year} </small>
-                    </div>
-                    </a>
-                    </li>`;
-                    $("#sharedNotesList").append(note);
                 }
             }
             else{
@@ -861,10 +869,6 @@ function loadSharedNotes(parameter){
                     $("#sharedNotesList").append(note);
 
             }
-
-
-
-
          }
     });
     
@@ -887,9 +891,13 @@ function loadChatData(noteId){
     $("#offcanvas-chat .offcanvas-tools .active").removeClass("active");
     $("#chatMessage").attr('roomId',noteId);
 
+
+
     var data = {
        
-        noteId: noteId
+        noteId: noteId,
+        offset:0,
+        limit:6
     };
 
     $.ajax({
@@ -900,34 +908,110 @@ function loadChatData(noteId){
             //myFunction();
             $('.list-chats').empty();
 
-            for(var i=0;i<data.length;i++){
-                var day = new Date(data[i].createdAt).getDate();
-                var month =new Date(data[i].createdAt).getMonth()+1;
-                var year= new Date(data[i].createdAt).getFullYear();
-                var minute= new Date(data[i].createdAt).getMinutes();
-                var hour= new Date(data[i].createdAt).getHours();
-                var html = '';
-                if (data[i].senderEmail == $(".profile-info").text().trim())
-                    html += '<li>';
-                else
-                    html += "<li class='chat-left'>";
-
-                html += '   <div class="chat">';
-                html += '       <div class="chat-avatar"><img class="img-circle" src="' + data[i].senderAvatar + '" title="'+data[i].senderEmail+'"></div>';
-                html += '       <div class="chat-body">';
-                html += '           ' + data[i].message;
-                html += '           <small>' + day + '/' + month + '/' + year + ' ' + hour + ':' + minute + '</small>';
-                html += '       </div>';
-                html += '   </div>';
+            if(data.length==0){
+                $("#chatMessage").attr('disabled','true');
+                html = '<br><li >';
+                html += '<div style="text-align:center;">';
+                html += 'Aucun message. <br>Cette note n\'a pas encore ete partagee';
+                html += '</div>';
                 html += '</li>';
                 $('.list-chats').append(html);
-            }
-            
 
-        
-            
+            }
+            else{
+                $("#chatMessage").removeAttr('disabled');
+                for(var i=0;i<data.length;i++){
+                    var day = new Date(data[i].createdAt).getDate();
+                    var month =new Date(data[i].createdAt).getMonth()+1;
+                    var year= new Date(data[i].createdAt).getFullYear();
+                    var minute= new Date(data[i].createdAt).getMinutes();
+                    var hour= new Date(data[i].createdAt).getHours();
+                    var html = '';
+                    if (data[i].senderEmail == $(".profile-info").text().trim())
+                        html += '<li>';
+                    else
+                        html += "<li class='chat-left'>";
+
+                    html += '   <div class="chat">';
+                    html += '       <div class="chat-avatar"><img class="img-circle" src="' + data[i].senderAvatar + '" title="'+data[i].senderEmail+'"></div>';
+                    html += '       <div class="chat-body">';
+                    html += '           ' + data[i].message;
+                    html += '           <small>' + day + '/' + month + '/' + year + ' ' + hour + ':' + minute + '</small>';
+                    html += '       </div>';
+                    html += '   </div>';
+                    html += '</li>';
+                    $('.list-chats').append(html);
+                }
+
+                html = '<br><li id="liMoreChatData">';
+                html += '<div style="text-align:center;">';
+                html += '<button style="width:100%;font-size:10px;" onclick="loadMoreChatData()" type="button" class="btn btn-primary" id="btMore" >Charger plus de messages</button>';
+                html += '</div>';
+                html += '</li>';
+                $('.list-chats').append(html);
+
+            }
         }
     });
+}
+
+function loadMoreChatData(){
+    $("#liMoreChatData").remove();
+    var data = {
+       
+        noteId: $("#chatMessage").attr('roomId'),
+        offset:$('.list-chats li').length-1,
+        limit:6
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/loadChatData',
+        data: data,
+        success: function(data) {
+            //myFunction();
+            //$('.list-chats').empty();
+
+            if(data.length==0){
+                
+
+            }
+            else{
+                $("#chatMessage").removeAttr('disabled');
+                for(var i=0;i<data.length;i++){
+                    var day = new Date(data[i].createdAt).getDate();
+                    var month =new Date(data[i].createdAt).getMonth()+1;
+                    var year= new Date(data[i].createdAt).getFullYear();
+                    var minute= new Date(data[i].createdAt).getMinutes();
+                    var hour= new Date(data[i].createdAt).getHours();
+                    var html = '';
+                    if (data[i].senderEmail == $(".profile-info").text().trim())
+                        html += '<li>';
+                    else
+                        html += "<li class='chat-left'>";
+
+                    html += '   <div class="chat">';
+                    html += '       <div class="chat-avatar"><img class="img-circle" src="' + data[i].senderAvatar + '" title="'+data[i].senderEmail+'"></div>';
+                    html += '       <div class="chat-body">';
+                    html += '           ' + data[i].message;
+                    html += '           <small>' + day + '/' + month + '/' + year + ' ' + hour + ':' + minute + '</small>';
+                    html += '       </div>';
+                    html += '   </div>';
+                    html += '</li>';
+                    $('.list-chats').append(html);
+                }
+
+                html = '<br><li id="liMoreChatData">';
+                html += '<div style="text-align:center;">';
+                html += '<button style="width:100%;font-size:10px;" onclick="loadMoreChatData()" type="button" class="btn btn-primary" id="btSave" >Charger plus de messages</button>';
+                html += '</div>';
+                html += '</li>';
+                $('.list-chats').append(html);
+
+            }
+        }
+    });
+
 }
 
 // function denletenote(a){

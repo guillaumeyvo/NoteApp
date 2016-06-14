@@ -231,13 +231,15 @@ module.exports = function(app, passport) {
     });
 
 
-    app.post('/loadChatData', function(req, res) {
+    app.post('/loadChatData', middleware.isLoggedIn, function(req, res) {
         
         db.chat_message.findAll({
             where: {
                 noteId: req.body.noteId
                 //noteId: 'xtlOSw2yHSoXfD5d'
             },
+            limit:req.body.limit,
+            offset:req.body.offset,
             order: [
                 ['createdAt', 'DESC']
             ]
