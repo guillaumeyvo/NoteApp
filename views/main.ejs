@@ -37,6 +37,15 @@
          .card-head.nav-tabs, .card-head > .nav-tabs {
          padding: 0px !important;
          }
+
+
+
+         @media screen and (min-width: 768px) {
+
+	#manageRightModal .modal-dialog  {width:1000px;}
+
+}
+#manageRightModal .modal-dialog  {width:75%;}
       </style>
       <!-- END STYLESHEETS -->
       <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -198,9 +207,9 @@
                      <ul>
                         <% for(var j=0; j<userNote[i]["notes"].length; j++) { %>
                         <% if(i==0 && j==0){ %>
-                        <li><a href="#" id="<%= userNote[i]["notes"][j].id %>" class="active" onclick="loadNote(this)"><span class="title"><%= userNote[i]["notes"][j].title %><i style="float: right;" class="md md-delete" onclick="deleteNote(this)"></i></span></a></li>
-                        <% } else{ %>  
-                        <li><a href="#" id="<%= userNote[i]["notes"][j].id %>" onclick="loadNote(this)"><span class="title"><%= userNote[i]["notes"][j].title %><i style="float: right;" class="md md-delete" onclick="deleteNote(this,'menu')"></i></span></a></li>
+                        <li><a href="#" id="<%= userNote[i]["notes"][j].id %>" isShared="<%= userNote[i]["notes"][j].isShared %>" class="active" onclick="loadNoteOnEditor(this)"><span class="title"><%= userNote[i]["notes"][j].title %><i style="float: right;" class="md md-delete" onclick="deleteNote(this)"></i></span></a></li>
+                        <% } else{ %>
+                        <li><a href="#" id="<%= userNote[i]["notes"][j].id %>" isShared="<%= userNote[i]["notes"][j].isShared %>" onclick="loadNoteOnEditor(this)"><span class="title"><%= userNote[i]["notes"][j].title %><i style="float: right;" class="md md-delete" onclick="deleteNote(this,'menu')"></i></span></a></li>
                         <% } %>
                         <% } %>
                      </ul>
@@ -223,7 +232,7 @@
                            <ul>
                               <% for(var j=0; j<sharenote[i]["folders"].length; j++) { %>
                               <% for(var k=0; k<sharenote[i]["folders"][j]["notes"].length; k++) { %>
-                              <li><a href="#" id="<%= sharenote[i]["folders"][j]["notes"][k].id %>" onclick="loadNote(this)"><span class="title"><%= sharenote[i]["folders"][j]["notes"][k].title %><i style="float: right;" class="md md-delete"></i></span></a></li>
+                              <li><a href="#" id="<%= sharenote[i]["folders"][j]["notes"][k].id %>" isShared="true" right="<%= sharenote[i]["folders"][j]["notes"][k]["shared_notes"][0].right %>" onclick="loadNoteOnEditor(this)"><span class="title"><%= sharenote[i]["folders"][j]["notes"][k].title %><i style="float: right;" class="md md-delete"></i></span></a></li>
                               <% } %>
                               <% } %>
                            </ul>
@@ -340,7 +349,7 @@
                   </ul>
                </div>
                <!--end .offcanvas-body -->
-                            
+
             </div>
             <!--end .offcanvas-pane -->
             <!-- BEGIN OFFCANVAS SEARCH -->
@@ -368,7 +377,12 @@
                               Alex Nelson
                               <small>Partage le 10/10/2016</small>
                            </div>
+
                         </a>
+                        <a><i style="padding-bottom: 23px;padding-right: 6px;" class="md md-settings"></i></a>
+                        <!-- <div class="tile-icon">
+                           <img src="../../assets/img/avatar4.jpg?1404026791" alt="" />
+                        </div> -->
                      </li>
                      <li class="tile">
                         <a class="tile-content ink-reaction" href="#offcanvas-chat" data-toggle="offcanvas" data-backdrop="false">
@@ -401,7 +415,7 @@
                </div>
                <form class="form-horizontal" method="post" id="delete_file_form">
                   <div class="modal-body">
-                     Voulez-vous vraiment supprimer cette note ? 
+                     Voulez-vous vraiment supprimer cette note ?
                   </div>
                   <div class="modal-footer">
                      <button data-dismiss="modal" class="btn btn-danger" name="in_confirm_insert" id="bt_delete">Supprimer</button>
@@ -420,7 +434,7 @@
                </div>
                <form class="form-horizontal" method="post" id="delete_file_form">
                   <div class="modal-body">
-                     Voulez vous enregistrer la note actuelle ?  
+                     Voulez vous enregistrer la note actuelle ?
                   </div>
                   <div class="modal-footer">
                      <button data-dismiss="modal" class="btn btn-danger" name="in_confirm_insert" id="bt_cancel">Non</button>
@@ -548,7 +562,7 @@
                </div>
                <div class="modal-body">
                   <div class="alert alert-danger" role="alert">
-                     La suprression est <strong>definitive</strong> et supprimera par la meme occasion toutes les notes du dossier
+                     La suppression est <strong>definitive</strong> et supprimera par la meme occasion toutes les notes du dossier
                   </div>
                   <ul class="list" id="manageFolderList">
                      <li class="tile">
@@ -606,9 +620,19 @@
                               <input type="text" placeholder="Email du destinataire" class="form-control" id="sendTo">
                            </div>
                         </a>
+                        <div class="btn-group" style="vertical-align:baseline !important;">
+													<button type="button" id="sharingRight" class="btn ink-reaction btn-flat dropdown-toggle" data-toggle="dropdown" style="font-size: 11px !important;">
+														Peut modifier et partager <i class="fa fa-caret-down text-default-light"></i>
+													</button>
+													<ul class="dropdown-menu animation-slide" role="menu">
+														<li><a href="#" onclick="changeSharingRight(this)">Peut modifier sans partager</a></li>
+														<li><a href="#" onclick="changeSharingRight(this)">Peut seulement afficher</a></li>
+													</ul>
+												</div>
                         <a class="btn btn-flat ink-reaction">
                         <i class="fa fa-user-plus" onclick="addDestinator()"></i>
                         </a>
+
                      </li>
                   </ul>
                   <div class="list-tags" style="margin-left:20px;">
@@ -624,6 +648,71 @@
          <!-- /.modal-dialog -->
       </div>
       <!-- /.modal -->
+
+      <div class="modal fade" id="manageRightModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" id="simpleModalLabel">Gerer les dossiers</h4>
+               </div>
+               <div class="modal-body table-responsive">
+                   <table class="table table-hover">
+                     <thead>
+                       <tr>
+                         <th>Avatar</th>
+                         <th>Email</th>
+                         <th>Droits</th>
+                         <th class="text-right"></th>
+                       </tr>
+                     </thead>
+                     <tbody id="noteSharingSettings">
+                       <tr>
+                         <td><img class="img-circle width-1" src="../../assets/img/avatar2.jpg?1404026449" alt="" /></td>
+                         <td>absssssssssssc@xyz.com</td>
+                         <!-- <td>Fuisset delicatissimi duo, qui ut animal noluisse erroribus.</td> -->
+                         <td>	<label class="radio-inline radio-styled">
+                             <input type="radio" name="inlineRadioOptions" value="option1"><span>Peut modifier et partager</span>
+                           </label>
+                           <label class="radio-inline radio-styled">
+                             <input type="radio" name="inlineRadioOptions" value="option2"><span>Peut modifier sans partager</span>
+                           </label>
+                           <label class="radio-inline radio-styled">
+                             <input type="radio" name="inlineRadioOptions" value="option3"><span>Peut seulement afficher</span>
+                           </label></td>
+                         <td class="text-right">
+                           <button type="button" class="btn btn-icon-toggle" data-toggle="tooltip" data-placement="top" data-original-title="Delete row"><i class="fa fa-trash-o"></i></button>
+                         </td>
+                       </tr>
+                       <tr>
+                         <td><img class="img-circle width-1" src="../../assets/img/avatar4.jpg?1404026791" alt="" /></td>
+                         <td>abc@xyz.com</td>
+                         <td>Ea eum veniam audire. Dicant vituperata consequuntur.</td>
+                         <td class="text-right">
+                           <button type="button" class="btn btn-icon-toggle" data-toggle="tooltip" data-placement="top" data-original-title="Delete row"><i class="fa fa-trash-o"></i></button>
+                         </td>
+                       </tr>
+                       <tr>
+                         <td><img class="img-circle width-1" src="../../assets/img/avatar11.jpg?1404026774" alt="" /></td>
+                         <td>abc@xyz.com</td>
+                         <td>Per at postea mediocritatem, vim numquam aliquid eu, in nam sale gubergren.</td>
+                         <td class="text-right">
+                           <button type="button" class="btn btn-icon-toggle" data-toggle="tooltip" data-placement="top" data-original-title="Delete row"><i class="fa fa-trash-o"></i></button>
+                         </td>
+                       </tr>
+                     </tbody>
+                   </table>
+
+
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+               </div>
+            </div>
+            <!-- /.modal-content -->
+         </div>
+         <!-- /.modal-dialog -->
+      </div>
       <!-- END SIMPLE MODAL MARKUP -->
       <!-- BEGIN JAVASCRIPT -->
       <script src="../../assets/js/libs/jquery/jquery-1.11.2.min.js"></script>
@@ -646,14 +735,14 @@
       <script src="../../assets/js/core/demo/Demo.js"></script>
       <script src="../../assets/js/core/demo/DemoFormEditors.js"></script>
       <script src="../../assets/js/libs/dropzone/dropzone.min.js"></script>
-      <script type="text/javascript" src="main.js"></script> 
+      <script type="text/javascript" src="main.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
       <script type="text/javascript">
          var timeOutFunction; // used to reset timer in the timeout function used for ajax request
-         
+
          $('#mymodalForm input').on('change', function() {
-         //alert($('input[name="optionsRadios"]:checked', '#mymodalForm').val()); 
-         if($('input[name="optionsRadios"]:checked', '#mymodalForm').val() ==1) 
+         //alert($('input[name="optionsRadios"]:checked', '#mymodalForm').val());
+         if($('input[name="optionsRadios"]:checked', '#mymodalForm').val() ==1)
          {
          	$('#foldername').prop("disabled", true);
          	$('#sel1').prop("disabled", false);
@@ -663,13 +752,13 @@
          	$('#foldername').prop("disabled", false);
          	$('#sel1').prop("disabled", true);
          	//$('#btSave').prop("disabled", true);
-         
-         
+
+
          }
          });
-           
-         
-         
+
+
+
          $(document).ready(function() {
          //var socket = io();
          //console.log(socket);
@@ -681,57 +770,98 @@
                                   alert('end reached');
                                 }
                               });
-         
-         
+
+
          $( "#chatMessage" ).keypress(function( e ) {
          	addChatMessageSender(e);
          });
-         
+
          joinRoom(); // add user to the differents rooms to which he belongs to
          loadSharedNotes('byUser') //load shared notes' data
-         
+
          $("#searchbtn").on('click', function() {
            		search();
          });
-         
+
          $("#userFolder").on('click', function() {
          	getFolderManageModal();
          	$("#simpleModal").modal('show');
-           		
+
          });
-         
+
          $("#chatMessageIcon").on('click', function() {
          	$(".md-chat .badge").remove();
-           		
+
          });
          $("#uploadlink").on('click', function() {
            		$("#uploadInput").click();
          });
-         
+
          $("#uploadInput").change(function() {
          		uploadProfilePicture(this);
-         
+
          });
-         
-         
+
+
             $(".gui-folder").find('li.active:first').children().trigger("click");
-         
+
             $("#sendTo").keydown(function(){
             	if($("#errorShareDiv").is(":visible"))
                 	$("#errorShareDiv").hide();
             });
-         
+
          });
-         
+
          $('#dSummernote').summernote({
             height: 420,
             placeholder: 'write here...',
-            onChange: save
+            //onChange: formatting,
+            //onkeyup : save
+            //onKeypress : save
          });
-         
-         
-         function save()
-         {
+
+        // $(".note-editable").keyup(function( e ) {
+        //   //console.log('Key is downed:', e.key);
+        //   save(e);
+        // });
+
+        $(".note-editable").keypress(function( e ) {
+          //console.log('Key is downed:', e.key);
+          //console.log("keypress",e);
+          save(e);
+        }).on('keydown', function(e) {
+          switch (e.key) {
+            case "Tab":
+              console.log("Tab key has been hit");
+              break;
+            case "enter":
+              console.log("enter key has been hit");
+              break;
+            case "Backspace":
+              console.log("Backspace key has been hit");
+              break;
+            case "Delete":
+              console.log("Delete key has been hit");
+              break;
+            default:
+            //console.log("key",e.key);
+
+          }
+
+ });
+
+
+     function formatting(e,f){
+       console.log("e",e);
+       console.log("f",f);
+       console.log("content",$(".note-editable").html());
+       console.log("inside formatting");
+     }
+
+
+     function save(e){
+       //console.log(e);
+       if (!($("#dSummernote").attr("collaborativeEditing")=="true")) {
          clearTimeout(timeOutFunction);
          var attr = $("#noteTitle").attr("noteid");
          if(typeof attr !== typeof undefined && attr !== false){ // if the note has an id(if it is not a note that has not yet been saved)
@@ -740,16 +870,43 @@
          		$("#saveMessage").text("Enregistrement en cours ...");
          		//console.log($('#dSummernote').code());
          		autoSave();
-         	}, 1000);
-         }
-         
-            
-         }
-         
-         
-         
-          	
-      </script> 
+         	}, 2000);
+       }
+
+     }
+     else{
+       if (e.which !== 0 && e.charCode !== 0 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      //alert(String.fromCharCode(e.keyCode|e.charCode));
+      var selection = document.getSelection();
+      var cursorPos = selection.anchorOffset;
+      //console.log("cursorPos",cursorPos);
+      //console.log(e);
+      //console.log("key code ",e.keyCode|e.charCode);
+      console.log('Key is downed:',String.fromCharCode(e.keyCode|e.charCode));
+      var editorContent = $(".note-editable").html();
+
+         var div = document.createElement("div");
+         div.innerHTML = editorContent;
+         editorContent = div.textContent || div.innerText || "";
+         //console.log("content of the div stripped",editorContent);
+         //console.log("editor content",editorContent);
+         //console.log("div",div.outerHTML);
+         var contentAfterInsertion = editorContent.substr(0, cursorPos) + String.fromCharCode(e.keyCode|e.charCode) + editorContent.substr(cursorPos);
+         console.log("real content",$(".note-editable").html());
+         console.log("New text is ", contentAfterInsertion);
+         console.log(String.fromCharCode(e.keyCode|e.charCode)+" inserted at postion " + cursorPos+ " in string "+editorContent);
+         //console.log("element inserted is",text.charAt(cursorPos-1));
+      }
+      else {
+        console.log("Inside else");
+        console.log("key code ",e.keyCode|e.charCode);
+      }
+
+     }
+
+  }
+
+      </script>
       <!-- END JAVASCRIPT -->
    </body>
 </html>

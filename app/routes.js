@@ -69,7 +69,7 @@ module.exports = function(app, passport) {
                             email: {
                                        $ne:req.user.email
                                     }
-                            
+
                         },
                         include: [{
                             model: db.folder,
@@ -85,7 +85,7 @@ module.exports = function(app, passport) {
                                     }
                                 }]
                             }
-                                
+
                             ]
                         }]
                     }).then(function(sharenote){
@@ -94,7 +94,7 @@ module.exports = function(app, passport) {
                     console.log("**********************************");
                     console.log("sharenote");
                     console.log(sharenote);
-                    console.log("**********************************"); 
+                    console.log("**********************************");
 
 
                     console.log("**********************************");
@@ -156,6 +156,78 @@ module.exports = function(app, passport) {
     });
 
 
+    app.get('/test', function(req, res) {
+        //     console.log("=============CONTENU DE LA SESSION=================");
+        // console.log(req.user);
+        // console.log("=============FIN DU CONTENU DE LA SESSION=================");
+
+            db.folder.findAll({
+                where: {
+                    userId: 'u6BJJXmllBwsOxGP'
+                },
+                include: [{
+                        model: db.note
+                    }, // load all pictures
+                ]
+            }).then(function(data) {
+
+
+                   db.user.findAll({
+                        where:{
+                            email: {
+                                       $ne:'guillaumeyvo@yahoo.fr'
+                                    }
+
+                        },
+                        include: [{
+                            model: db.folder,
+                            include:[{
+                                model: db.note,
+                                include:[{
+                                    model:db.shared_note,
+                                    where:{
+                                        receiverEmail:'guillaumeyvo@yahoo.fr',
+                                        id: {
+                                       $ne:null
+                                    }
+                                    }
+                                }]
+                            }
+
+                            ]
+                        }]
+                    }).then(function(sharenote){
+
+
+                    console.log("**********************************");
+                    console.log("sharenote");
+                    console.log(sharenote);
+                    console.log("**********************************");
+
+
+                    console.log("**********************************");
+                    console.log("data");
+                    console.log(data);
+                    console.log("**********************************");
+
+                        res.send(sharenote);
+
+                        },
+                            function(e){
+
+                        });
+
+
+
+                },
+                function(e) {
+                    console.log("error");
+                    console.log(e);
+
+                });
+    });
+
+
 
 
 };
@@ -165,7 +237,7 @@ function isLoggedIn(req, res, next) {
     // console.log("=============================");
     // console.log(req);
     // console.log("=============================");
-    // if user is authenticated in the session, carry on 
+    // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         return next();
 

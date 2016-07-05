@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
 		      return id;
 		    },
 		    primaryKey: true,
-		    allowNull: false 
+		    allowNull: false
 	  	},
 		content: {
 			type: DataTypes.STRING,
@@ -19,6 +19,13 @@ module.exports = function(sequelize, DataTypes) {
 		title: {
 			type: DataTypes.STRING,
 			allowNull: false
+		}
+		,
+		isShared: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: function() {
+				return false;
+			}
 		}
 	});
 };

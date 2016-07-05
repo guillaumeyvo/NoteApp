@@ -47,19 +47,26 @@ require('./app/folder_routes.js')(app, passport); // load our routes and pass in
 db.sequelize.sync(/*{force : true}*/).then(function() {
 
 	io.on('connection', function(socket){
-		socket.on('joinRoom', function(room) { 
+		socket.on('joinRoom', function(room) {
 			console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 			console.log('joining room', room);
 			console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-	        
+
 	        socket.room=room;
-	        socket.join(room); 
+	        socket.join(room);
     	})
 		socket.on('chat message', function(msg){
 
 			io.in(msg.roomId).emit('chat message', msg);
 			//io.emit('chat message', msg);
-			
+
+		});
+		socket.on('concurentEditing', function(data){
+			console.log("Inside concurentEditing");
+			console.log(data);
+			io.in(data.roomId).emit('concurentEditing', data);
+			//io.emit('chat message', msg);
+
 		});
 	});
 
