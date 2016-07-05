@@ -41,6 +41,18 @@ socket.on('chat message', function(msg) {
   }
 });
 
+socket.on('sharedNoteRightUpdate', function(data) {
+  console.log("Inside socket client side sharedNoteRightUpdate");
+  if (data.receiverEmail == $(".profile-info").text().trim()) // if not the message sender
+  {
+    console.log("Inside user condition");
+    $('#refreshDataModal').modal('show');
+    var modalBodyContent = "Vos droits d'acces a la note " + data.noteTitle + " viennent d'etre modifies.";
+    $('#refreshDataModal .modal-body').text(modalBodyContent);
+
+  }
+});
+
 socket.on('concurentEditing', function(data) {
   if (data.senderId != socket.id) // if not the message sender
   {
@@ -927,6 +939,7 @@ function removeSendToTag(a) {
 }
 
 function shareNote() {
+  $(".list-tags").empty();
   $('#shareModal').modal('show');
 }
 
@@ -951,7 +964,8 @@ function shareToSelectedUser() {
     data: data,
     success: function(data) {
       //myFunction();
-      console.log(data);
+      //console.log(data);
+      loadSharedNotes('byUser');
 
     }
   });
@@ -1048,7 +1062,7 @@ function loadMessageChat() {
 
 
 
-function loadChatData(noteId) {
+function loadChatData(noteId) { // loads the last 6 message chat for the selected note.
   console.log("noteId", noteId);
   $("#offcanvas-chat").css('transform', 'translate(-480px, 0px)');
   $("#offcanvas-chat").addClass('active');
@@ -1128,7 +1142,7 @@ function loadChatData(noteId) {
   });
 }
 
-function loadMoreChatData() {
+function loadMoreChatData() { // handles click on load more chat data
   $("#liMoreChatData").remove();
   var data = {
 
@@ -1205,7 +1219,7 @@ function changeSharingRight(a) { // handle the dropdown list used to assign righ
 
 }
 
-function loadNoteSharingSetting(noteId,noteTitle) {
+function loadNoteSharingSetting(noteId,noteTitle) { // load setting data for right's administration of sharenote
   console.log("Inside loadNoteSharingSetting ");
   console.log();
 
@@ -1223,43 +1237,44 @@ function loadNoteSharingSetting(noteId,noteTitle) {
         tableRow += "<td>"+userData[i].receiverEmail+"</td>";
         tableRow += "<td>	<label class='radio-inline radio-styled'>";
         if (userData[i].right == 'Peut modifier et partager') {
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option1' checked><span>Peut modifier et partager</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut modifier et partager' checked><span>Peut modifier et partager</span>";
           tableRow += "</label>";
           tableRow += "<label class='radio-inline radio-styled'>";
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option2'><span>Peut modifier sans partager</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut modifier sans partager'><span>Peut modifier sans partager</span>";
           tableRow += "</label>";
           tableRow += "<label class='radio-inline radio-styled'>";
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option3'><span>Peut seulement afficher</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut seulement afficher'><span>Peut seulement afficher</span>";
           tableRow += "</label></td>";
         }
         else if (userData[i].right == 'Peut modifier sans partager') {
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option1' ><span>Peut modifier et partager</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut modifier et partager' ><span>Peut modifier et partager</span>";
           tableRow += "</label>";
           tableRow += "<label class='radio-inline radio-styled'>";
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option2' checked><span>Peut modifier sans partager</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut modifier sans partager' checked><span>Peut modifier sans partager</span>";
           tableRow += "</label>";
           tableRow += "<label class='radio-inline radio-styled'>";
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option3'><span>Peut seulement afficher</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut seulement afficher'><span>Peut seulement afficher</span>";
           tableRow += "</label></td>";
         }
         else {
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option1' ><span>Peut modifier et partager</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut modifier et partager' ><span>Peut modifier et partager</span>";
           tableRow += "</label>";
           tableRow += "<label class='radio-inline radio-styled'>";
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option2' ><span>Peut modifier sans partager</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut modifier sans partager' ><span>Peut modifier sans partager</span>";
           tableRow += "</label>";
           tableRow += "<label class='radio-inline radio-styled'>";
-          tableRow += "<input type='radio' name='inlineRadioOptions' value='option3' checked><span>Peut seulement afficher</span>";
+          tableRow += "<input type='radio' name='rightRadioButton' onchange='changingUserRight(this)' value='Peut seulement afficher' checked><span>Peut seulement afficher</span>";
           tableRow += "</label></td>";
         }
 
         tableRow += "<td class='text-right'>";
-        tableRow += "<button type='button' class='btn btn-icon-toggle' data-toggle='tooltip' data-placement='top' data-original-title='Delete row'><i onclick='removeUserFromSharingList(&#39;"+userData[i].receiverEmail+"&#39;)' class='fa fa-trash-o'></i></button>";
+        tableRow += "<button type='button' class='btn btn-icon-toggle' data-toggle='tooltip' data-placement='top' data-original-title='Delete row'><i onclick='removeUserFromSharingList(this)' class='fa fa-trash-o'></i></button>";
         tableRow += "</td>";
         tableRow += "</tr>";
         $('#noteSharingSettings').append(tableRow);
       }
       $("#manageRightModal .modal-title").text("Gestion des droits de partage pour la note "+noteTitle);
+      $("#manageRightModal .modal-title").attr('noteId',noteId);
       $('#manageRightModal').modal('show');
     }
   });
@@ -1268,10 +1283,51 @@ function loadNoteSharingSetting(noteId,noteTitle) {
   //$('.table-responsive').parent().parent().css("width", "1000px");
 }
 
-function removeUserFromSharingList(userEmail){
-  console.log("Inside removeUserFromSharingList",userEmail);
+function removeUserFromSharingList(icon){
+  //console.log("Inside removeUserFromSharingList",userEmail);
+
+  $.ajax({
+    type:'DELETE',
+    url:'/deleteUserFromSharingList',
+    data:{noteId:$("#manageRightModal .modal-title").attr('noteId'),receiverEmail:$(icon).closest('tr').find('td:nth-child(2)').text().trim()},
+    success:function() {
+      var noteTitle =$("#manageRightModal .modal-title").text().substring(43);
+      var noteId =$("#manageRightModal .modal-title").attr('noteId');
+      var data={
+        receiverEmail:$(icon).closest('tr').find('td:nth-child(2)').text().trim(),
+        noteTitle:noteTitle,
+        noteId:noteId
+      };
+      $(icon).closest('tr').remove();
+      loadSharedNotes('byUser');
+
+      socket.emit('sharedNoteRightUpdate', data); //emit a socket from refreshing removed user page
+
+
+    }
+  });
 }
 
+function changingUserRight(input) {
+
+  var noteTitle =$("#manageRightModal .modal-title").text().substring(43);
+  var data ={
+    noteId:$("#manageRightModal .modal-title").attr('noteId'),
+    receiverEmail:$(input).closest('td').prev().text(),
+    right: $(input).val(),
+    noteTitle:noteTitle
+  };
+  $.ajax({
+    type: 'PUT',
+    url: '/changeUserNoteRight',
+    data: data,
+    success: function() {
+      socket.emit('sharedNoteRightUpdate', data); //emit a socket from refreshing user page
+
+    }
+  });
+
+}
 
 // function denletenote(a){
 //     console.log(a);

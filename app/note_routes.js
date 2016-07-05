@@ -206,6 +206,41 @@ module.exports = function(app, passport) {
         });
 
     });
+    app.put('/changeUserNoteRight', middleware.isLoggedIn, function(req, res) {
+        //var noteId = req.params.id;
+        db.shared_note.findOne({
+            where: {
+                noteId: req.body.noteId,
+                receiverEmail: req.body.receiverEmail
+            }
+        }).then(function(shared_note) {
+            shared_note.updateAttributes({
+                right: req.body.right
+            });
+            res.status(200).send();
+        }, function(e) {
+            console.log("error in changeUserNoteRight");
+            console.log(e);
+
+        });
+
+    });
+
+    app.delete('/deleteUserFromSharingList', middleware.isLoggedIn ,  function(req, res) {
+        db.shared_note.destroy({
+            where: {
+                noteId: req.body.noteId,
+                receiverEmail:req.body.receiverEmail
+            }
+        }).then(function(numberOfRowDeleted) {
+            console.log(numberOfRowDeleted);
+            //res.send(numberOfRowDeleted);
+            res.status(204).send();
+        }, function(e) {
+          console.log("error in deleteUserFromSharingList");
+          console.log(e);
+        });
+    });
 
     app.delete('/notedelete/:id', middleware.isLoggedIn, function(req, res) {
         var noteId = req.params.id;

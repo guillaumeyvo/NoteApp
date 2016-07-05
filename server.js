@@ -62,12 +62,18 @@ db.sequelize.sync(/*{force : true}*/).then(function() {
 
 		});
 		socket.on('concurentEditing', function(data){
-			console.log("Inside concurentEditing");
-			console.log(data);
 			io.in(data.roomId).emit('concurentEditing', data);
 			//io.emit('chat message', msg);
 
+
 		});
+		socket.on('sharedNoteRightUpdate', function(data){
+			console.log("Inside socket server side sharedNoteRightUpdate");
+			io.in(data.noteId).emit('sharedNoteRightUpdate', data);
+			//io.emit('chat message', msg);
+
+		});
+
 	});
 
 
