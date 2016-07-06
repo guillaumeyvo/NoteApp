@@ -105,6 +105,23 @@ module.exports = function(app, passport) {
             });
     });
 
+    app.post('/isNoteShared', middleware.isLoggedIn, function(req, res) {
+        db.shared_note.findAll({
+            where: {
+                noteOwnerEmail: req.body.noteOwnerEmail,
+                receiverEmail: req.body.receiverEmail,
+                noteId: req.body.noteId
+            }
+        }).then(function(sharenote) {
+                res.send(sharenote);
+            },
+            function(e) {
+              console.log("erreur in route /isNoteShared");
+              console.log(e);
+
+            });
+    });
+
 
     app.post('/noteSharedInformation', function(req, res) {
 
