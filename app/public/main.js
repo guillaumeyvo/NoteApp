@@ -14,9 +14,6 @@ function joinRoom() {
             for (var i = 0; i < data.length; i++) {
                 socket.emit('joinRoom', data[i].noteId);
             }
-
-            //socket.emit('adduser', prompt("What's your name?"));
-
         },
         error: function(errResponse) {
             console.log("error while connecting to the socket");
@@ -28,10 +25,7 @@ function joinRoom() {
 }
 
 socket.on('connect', function() {
-    // call the server-side function 'adduser' and send one parameter (value of prompt)
     console.log("connected to socket io");
-
-
 });
 
 socket.on('chat message', function(msg) {
@@ -56,37 +50,60 @@ socket.on('sharedNoteRightUpdate', function(data) {
 socket.on('concurentEditing', function(data) {
     if (data.senderId != socket.id) // if not the message sender
     {
-        console.log("data", data);
         if ($("[noteid]").attr("noteId") == data.noteId) {
-            if (document.getSelection()) {
-                var selection = document.getSelection();
-                var cursorPos = data.cursorPosition
-                var oldContent = selection.anchorNode.nodeValue;
-                if (!selection.anchorNode.nodeValue) {
-                    $('.note-editable').trigger('focus');
-                    //var cursorPos = 3;
-                    var oldContent = selection.anchorNode.nodeValue;
+            if (data.isSPecialCharacter) { // if a special character has been hit
+                console.log("inside concurentEditing client side");
+                switch (data.characterInserted) {
+                    case "Backspace":
+                        console.log("inside concurentEditing client side");
+                        var selection = document.getSelection();
+                        var cursorPos = data.cursorPosition;
+                        var oldContent = selection.anchorNode.nodeValue;
+                        var newContent = oldContent.substring(0, cursorPos - 1) + oldContent.substring(cursorPos);
+                        selection.anchorNode.nodeValue = newContent;
+                        break;
+                    case "Delete":
+                        var selection = document.getSelection();
+                        var cursorPos = data.cursorPosition;
+                        var oldContent = selection.anchorNode.nodeValue;
+                        var newContent = oldContent.substring(0, cursorPos) + oldContent.substring(cursorPos + 1);
+                        selection.anchorNode.nodeValue = newContent;
+                        break;
+                    default:
+
                 }
-                var toInsert = data.characterInserted;
-                console.log("oldContent", oldContent);
-                console.log("cursorPos", cursorPos);
-                console.log("oldContent.substring(0, cursorPos)", oldContent.substring(
-                    0, cursorPos));
-                console.log("oldContent.substring(cursorPos)", oldContent.substring(
-                    cursorPos));
-                console.log("toInsert", toInsert);
-                console.log("newContent", oldContent);
-                var newContent = oldContent.substring(0, cursorPos) + toInsert +
-                    oldContent.substring(cursorPos);
-                selection.anchorNode.nodeValue = newContent;
+
+            } else { // if a normal character has been it
+                if (document.getSelection()) {
+                    var selection = document.getSelection();
+                    var cursorPos = data.cursorPosition
+                    var oldContent = selection.anchorNode.nodeValue;
+                    if (!selection.anchorNode.nodeValue) {
+                        $('.note-editable').trigger('focus');
+                        //var cursorPos = 3;
+                        var oldContent = selection.anchorNode.nodeValue;
+                    }
+                    var toInsert = data.characterInserted;
+                    // console.log("oldContent", oldContent);
+                    // console.log("cursorPos", cursorPos);
+                    // console.log("oldContent.substring(0, cursorPos)", oldContent.substring(
+                    //     0, cursorPos));
+                    // console.log("oldContent.substring(cursorPos)", oldContent.substring(
+                    //     cursorPos));
+                    // console.log("toInsert", toInsert);
+                    // console.log("newContent", oldContent);
+                    var newContent = oldContent.substring(0, cursorPos) + toInsert +
+                        oldContent.substring(cursorPos);
+                    selection.anchorNode.nodeValue = newContent;
+                }
             }
+
         }
     }
 });
 
 
 function save(e) {
-    //console.log(e);
     if (!($("#dSummernote").attr("collaborativeEditing") == "true")) {
         clearTimeout(timeOutFunction);
         var attr = $("#noteTitle").attr("noteid");
@@ -100,6 +117,8 @@ function save(e) {
         }
 
     } else {
+        //autoSave();
+
         if (e.which !== 0 && e.charCode !== 0 && !e.ctrlKey && !e.metaKey && !e.altKey) {
             //alert(String.fromCharCode(e.keyCode|e.charCode));
             var selection = document.getSelection();
@@ -119,6 +138,7 @@ function save(e) {
             //console.log(String.fromCharCode(e.keyCode | e.charCode) +
             //  " inserted at postion " + cursorPos + " in string " + editorContent);
             var data = {
+                isSPecialCharacter: false,
                 characterInserted: String.fromCharCode(e.keyCode | e.charCode),
                 cursorPosition: cursorPos,
                 noteId: $("[noteid]").attr("noteId"),
@@ -134,6 +154,18 @@ function save(e) {
 
     }
 
+}
+
+function specialCharacterSave(specialCharacter, cursorPosition) {
+    var data = {
+        isSPecialCharacter: true,
+        characterInserted: specialCharacter,
+        cursorPosition: cursorPosition,
+        noteId: $("[noteid]").attr("noteId"),
+        senderId: socket.id,
+        roomId: $("[noteid]").attr("noteId")
+    };
+    socket.emit('concurentEditing', data);
 }
 
 function addChatMessageReceiver(msg) {
