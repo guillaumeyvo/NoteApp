@@ -1164,7 +1164,7 @@ function loadChatData(noteId) { // loads the last 6 message chat for the selecte
 
                     html += '   <div class="chat">';
                     html +=
-                        '       <div class="chat-avatar"><img class="img-circle" src="' +
+                        '       <div class="chat-avatar"><img class="chat-avatar" src="' +
                         data[i].senderAvatar + '" title="' + data[i].senderEmail +
                         '"></div>';
                     html += '       <div class="chat-body">';
@@ -1283,7 +1283,7 @@ function loadNoteSharingSetting(noteId, noteTitle) { // load setting data for ri
 
             for (var i = 0; i < userData.length; i++) {
                 var tableRow = "<tr>";
-                tableRow += "<td><img class='img-circle width-1' src='" + userData[i].avatar + "' alt='' /></td>";
+                tableRow += "<td><img class='chat-avatar width-1' src='" + userData[i].avatar + "' alt='' /></td>";
                 tableRow += "<td>" + userData[i].receiverEmail + "</td>";
                 tableRow += "<td>	<label class='radio-inline radio-styled'>";
                 if (userData[i].right == 'Peut modifier et partager') {
