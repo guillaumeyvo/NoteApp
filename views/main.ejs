@@ -104,6 +104,11 @@
                      </a>
                   </li>
                   <li>
+                     <a class="btn btn-icon-toggle btn-default" href="#offcanvas-chat-list" data-toggle="offcanvas" data-backdrop="false">
+                     <i class="fa fa-users"></i>
+                     </a>
+                  </li>
+                  <li>
                      <a class="btn btn-icon-toggle btn-default" id="chatMessageIcon" href="#offcanvas-chat" onclick="loadMessageChat()" data-toggle="offcanvas" data-backdrop="false">
                      <i class="md md-chat"></i>
                      </a>
@@ -882,52 +887,7 @@
 
 
 
-     function save(e){
-       //console.log(e);
-       if (!($("#dSummernote").attr("collaborativeEditing")=="true")) {
-         clearTimeout(timeOutFunction);
-         var attr = $("#noteTitle").attr("noteid");
-         if(typeof attr !== typeof undefined && attr !== false){ // if the note has an id(if it is not a note that has not yet been saved)
-         	timeOutFunction =setTimeout(function () {
-         		$("#saveMessage").empty();
-         		$("#saveMessage").text("Enregistrement en cours ...");
-         		//console.log($('#dSummernote').code());
-         		autoSave();
-         	}, 2000);
-       }
-
-     }
-     else{
-       if (e.which !== 0 && e.charCode !== 0 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      //alert(String.fromCharCode(e.keyCode|e.charCode));
-      var selection = document.getSelection();
-      var cursorPos = selection.anchorOffset;
-      //console.log("cursorPos",cursorPos);
-      //console.log(e);
-      //console.log("key code ",e.keyCode|e.charCode);
-      console.log('Key is downed:',String.fromCharCode(e.keyCode|e.charCode));
-      var editorContent = $(".note-editable").html();
-
-         var div = document.createElement("div");
-         div.innerHTML = editorContent;
-         editorContent = div.textContent || div.innerText || "";
-         //console.log("content of the div stripped",editorContent);
-         //console.log("editor content",editorContent);
-         //console.log("div",div.outerHTML);
-         var contentAfterInsertion = editorContent.substr(0, cursorPos) + String.fromCharCode(e.keyCode|e.charCode) + editorContent.substr(cursorPos);
-         console.log("real content",$(".note-editable").html());
-         console.log("New text is ", contentAfterInsertion);
-         console.log(String.fromCharCode(e.keyCode|e.charCode)+" inserted at postion " + cursorPos+ " in string "+editorContent);
-         //console.log("element inserted is",text.charAt(cursorPos-1));
-      }
-      else {
-        console.log("Inside else");
-        console.log("key code ",e.keyCode|e.charCode);
-      }
-
-     }
-
-  }
+  
 
 
       </script>

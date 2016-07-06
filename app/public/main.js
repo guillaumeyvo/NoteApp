@@ -106,7 +106,7 @@ function save(e) {
       var cursorPos = selection.anchorOffset;
       //console.log(e);
       //console.log("key code ",e.keyCode|e.charCode);
-      console.log('Key is downed:', String.fromCharCode(e.keyCode | e.charCode));
+      //console.log('Key is downed:', String.fromCharCode(e.keyCode | e.charCode));
       var editorContent = $(".note-editable").html();
 
       var div = document.createElement("div");
@@ -114,10 +114,10 @@ function save(e) {
       editorContent = div.textContent || div.innerText || "";
       var contentAfterInsertion = editorContent.substr(0, cursorPos) + String.fromCharCode(
         e.keyCode | e.charCode) + editorContent.substr(cursorPos);
-      console.log("real content", $(".note-editable").html());
-      console.log("New text is ", contentAfterInsertion);
-      console.log(String.fromCharCode(e.keyCode | e.charCode) +
-        " inserted at postion " + cursorPos + " in string " + editorContent);
+      //console.log("real content", $(".note-editable").html());
+      //console.log("New text is ", contentAfterInsertion);
+      //console.log(String.fromCharCode(e.keyCode | e.charCode) +
+      //  " inserted at postion " + cursorPos + " in string " + editorContent);
       var data = {
         characterInserted: String.fromCharCode(e.keyCode | e.charCode),
         cursorPosition: cursorPos,
@@ -924,6 +924,20 @@ function addDestinator() {
 
 
 }
+
+// function noteAlreadySharedWithUser(email) {
+//   $.ajax({
+//     type: 'POST',
+//     url: '/shareNote',
+//     data: {email: email},
+//     success: function(data) {
+//       //myFunction();
+//       //console.log(data);
+//       loadSharedNotes('byUser');
+//
+//     }
+//   });
+// }
 
 
 function validateEmail(email) {
