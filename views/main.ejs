@@ -79,7 +79,7 @@
                <ul class="header-nav header-nav-options">
                   <li class="header-nav-brand" >
                      <div class="brand-holder">
-                        <a href="../../html/dashboards/dashboard.html">
+                        <a>
                         <span class="text-lg text-bold text-primary">NOTEAPP</span>
                         </a>
                      </div>
@@ -153,13 +153,10 @@
                         <div class="input-group-content">
                            <input type="text" class="form-control" id="noteTitle" placeholder="Entrer le type de la note">
                         </div>
-                        <!-- <h1 id="noteTitle" class="no-margin">Reaching the top</h1> -->
-                        <!-- <select class="form-control" id="sel1" >
-                           <option>1</option>
-                           <option>2</option>
-                           <option>3</option>
-                           <option>4</option>
-                           </select> -->
+                        <div class="input-group-content" id="sharedIcon">
+                           <i class="fa fa-users" title="Note partagée"></i>
+                        </div>
+
                         <div class="btn-group stick-top-right">
                            <!-- <select class="btn ink-reaction btn-flat btn-primary " id="sel1" >
                               <option>Option 1</option>
@@ -179,7 +176,7 @@
                            <a class="btn btn-icon-toggle btn-default" onclick="addNewNote()"><i class="md md-add"></i></a>
                            <a id="toastTest" class="btn btn-icon-toggle btn-default" onclick="deleteNote()"><i class="md md-delete"></i></a>
                            <a onclick="updateNote()"  class="btn btn-icon-toggle btn-default"><i class="md md-save"></i></a>
-                           <a onclick="shareNote()"  class="btn btn-icon-toggle btn-default"><i class="md md-share"></i></a>
+                           <a onclick="shareNote()" id="shareNoteBtn"  class="btn btn-icon-toggle btn-default"><i class="md md-share"></i></a>
                         </div>
                         <span class="pull-right text-default-light" id="saveMessage"></span>
                         <hr/>
@@ -211,7 +208,7 @@
                   </a>
                </div>
                <div class="expanded">
-                  <a href="../../html/dashboards/dashboard.html">
+                  <a>
                   <span class="text-lg text-bold text-primary ">NOTEAPP</span>
                   </a>
                </div>

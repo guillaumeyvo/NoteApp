@@ -177,7 +177,7 @@ function addChatMessageReceiver(msg) {
         html += "<li class='chat-left'>";
 
     html += '   <div class="chat">';
-    html += '       <div class="chat-avatar"><img class="img-circle" src="' + msg
+    html += '       <div class="chat-avatar"><img class="chat-avatar" src="' + msg
         .avatar + '" alt=""></div>';
     html += '       <div class="chat-body">';
     html += '           ' + msg.message;
@@ -221,7 +221,7 @@ function addChatMessageSender(e) {
         var html = '';
         html += '<li>';
         html += '   <div class="chat">';
-        html += '       <div class="chat-avatar"><img class="img-circle" src="' +
+        html += '       <div class="chat-avatar"><img class="chat-avatar" src="' +
             avatar + '" title="' + $(".profile-info").text().trim() + '"></div>';
         html += '       <div class="chat-body">';
         html += '           ' + input.val();
@@ -236,6 +236,9 @@ function addChatMessageSender(e) {
 
         // Animate new inserts
         $new.show('fast');
+        if ($("#emptyChatMessage").length > 0) {
+          $("#emptyChatMessage").hide(); // hides la div contenant Aucun message if it's present
+        }
 
         // Reset chat input
         input.val('').trigger('autosize.resize');
@@ -498,20 +501,28 @@ function loadNoteOnEditor(a) {
 
                 console.log("note owner shared");
                 $("#dSummernote").attr("collaborativeEditing", "true");
+                $("#sharedIcon").show();
 
                 if ($(a).attr('right')) {
                     console.log("note shared to another user");
                     switch ($(a).attr('right')) {
                         case "Peut modifier et partager":
-                            $(".note-editable").attr('contenteditable', true);
+                            $(".note-editable").attr('contenteditable', true); // .removeAttr("disabled");
+                            $("#shareNoteBtn").removeAttr("disabled");
+                            $("#shareNoteBtn").removeAttr("title");
                             console.log("Peut modifier et partager");
                             break;
                         case "Peut modifier sans partager":
                             $(".note-editable").attr('contenteditable', true);
+                            $("#shareNoteBtn").attr("disabled", "disabled");
+                            $("#shareNoteBtn").attr("title", "Vous n'avez pas le droit de partarger cette note");
+
                             console.log("Peut modifier sans partager");
                             break;
                         case "Peut seulement afficher":
                             $(".note-editable").attr('contenteditable', false);
+                            $("#shareNoteBtn").attr("disabled", "disabled");
+                            $("#shareNoteBtn").attr("title", "Vous n'avez pas le droit de partarger cette note");
                             $(".note-editable[contenteditable='false']").css(
                                 "background-color", "white");
                             console.log("Peut seulement afficher");
@@ -525,6 +536,9 @@ function loadNoteOnEditor(a) {
                 console.log("note NOT shared");
                 $(".note-editable").attr('contenteditable', true);
                 $("#dSummernote").attr("collaborativeEditing", "false");
+                $("#shareNoteBtn").removeAttr("disabled");
+                $("#shareNoteBtn").removeAttr("title");
+                $("#sharedIcon").hide();
             }
 
         }
@@ -681,6 +695,7 @@ function addNewNote() {
     $(".note-editable").empty();
     $("#noteTitle").removeAttr("noteid");
     $("#saveMessage").empty();
+    $("#sharedIcon").hide();
 
 }
 
@@ -1014,6 +1029,7 @@ function shareToSelectedUser() {
             //myFunction();
             //console.log(data);
             loadSharedNotes('byUser');
+            $("#sharedIcon").show();
 
         }
     });
@@ -1139,13 +1155,27 @@ function loadChatData(noteId) { // loads the last 6 message chat for the selecte
             $('.list-chats').empty();
 
             if (data.length == 0) {
-                $("#chatMessage").attr('disabled', 'true');
+
+              if ($("#main-menu").find("a[id='"+noteId+"']").attr('isShared')=='true') {
+                $("#chatMessage").prop("disabled", false);
+                html = '<br><li >';
+                html += '<div id="emptyChatMessage" style="text-align:center;">';
+                html +=
+                    'Aucun message. ';
+                html += '</div>';
+                html += '</li>';
+              }
+              else {
+                $("#chatMessage").prop("disabled", true);
                 html = '<br><li >';
                 html += '<div style="text-align:center;">';
                 html +=
                     'Aucun message. <br>Cette note n\'a pas encore ete partagee';
                 html += '</div>';
                 html += '</li>';
+              }
+
+
                 $('.list-chats').append(html);
 
             } else {
@@ -1226,7 +1256,7 @@ function loadMoreChatData() { // handles click on load more chat data
 
                     html += '   <div class="chat">';
                     html +=
-                        '       <div class="chat-avatar"><img class="img-circle" src="' +
+                        '       <div class="chat-avatar"><img class="chat-avatar" src="' +
                         data[i].senderAvatar + '" title="' + data[i].senderEmail +
                         '"></div>';
                     html += '       <div class="chat-body">';
@@ -1379,223 +1409,3 @@ function changingUserRight(input) {
     });
 
 }
-
-// function denletenote(a){
-//     console.log(a);
-//     //console.log(a.id);
-//     //console.log("lien",a.children.length);
-//     event.stopPropagation();
-//     console.log(a.children.length>=1);
-
-//     if(a.children.length>=1)
-//     {
-//       console.log("Clicked on delete FALSE");
-//       $.ajax({
-//                 type: 'GET',
-//                 url: '/notedetail/'+a.id,
-//                 success: function(note) {
-//                   $("#noteTitle").empty();
-//                   $("#noteTitle").append(note.title);
-//                   $(".note-editable").empty();
-//                   $(".note-editable").append(note.content);
-//                   //CKEDITOR.instances['editor'].setData(note.content);
-
-//                 }
-//             });
-
-//     }
-//     else if(a.children.length ==0){
-//       console.log("Clicked on delete TRUE");
-
-//       $('#delete-file-modal').modal('show');
-
-
-//       $('#delete-file-modal .modal-footer button').on('click', function (e) {
-//           var $target = $(e.target);
-//           $(this).closest('.modal').on('hidden.bs.modal', function (e) {
-//               //alert('The buttons id that closed the modal is: #' + $target[0].id);
-//               if ($target[0].id=="bt_delete") {
-
-//                       $.ajax({
-//                         type: 'DELETE',
-//                         url: '/notedelete/'+a.id,
-//                         success: function(note) {
-//                           console.log(note.notedeleted);
-//                           if(note.notedeleted==true)
-//                           {
-//                             $("#sidemenu").find("#"+a.id+"").remove();
-//                           }
-//                           else
-//                           {
-//                             $('#error-modal').modal('show');
-//                           }
-
-//                         }
-//                       });
-
-//               };
-//           });
-//       });
-//       //console.log(a.id);
-
-
-
-//     }
-
-
-// }
-
-// var sidebar_content;
-
-// function search(){
-//   if($( "#searchicon" ).hasClass( "glyphicon-ok" ))
-//         {
-
-//           var s =$("#searchbox").val();
-//           $("#btsearch").find("#searchicon").removeClass("glyphicon glyphicon-ok").addClass("glyphicon glyphicon-remove");
-//           var html="";
-//           html+="<li class='panel panel-default' id='dropdown'>";
-//           html+="<a data-toggle='collapse' href='#folder' >";
-//           html+="<span class='glyphicon glyphicon-user'></span> Resultat de la recherche <span class='caret'></span></a>";
-//           html+="<div id='folder' class='panel-collapse collapse in'><div class='panel-body'><ul class='nav navbar-nav'>";
-
-
-//             $.ajax({
-//                 type: 'GET',
-//                 url: '/notesearch/'+s,
-//                 async:false,
-//                 success: function(notes) {
-//                   //console.log
-//                   //(notes);
-//                   for(var j =0;j<notes.length;j++)
-//                   {
-//                     html+="<li><a href='#' id='"+notes[j].id+"' onclick='deletenote(this)'>"+notes[j].title+"<span class='glyphicon glyphicon-trash pull-right' aria-hidden='true' id='"+notes[j].id+"' onclick='delete(this)'></span></a></li>";
-//                   }
-
-
-//                 }
-//             });
-
-//             html+="</ul></div></div></li>";
-//             sidebar_content =$("#sidemenu").html();
-//             $("#sidemenu").empty();
-//             $("#sidemenu").append(html);
-
-
-
-//         }
-//         else
-//         {
-//           $("#btsearch").find("#searchicon").removeClass("glyphicon glyphicon-remove").addClass("glyphicon glyphicon-ok");
-//           $("#searchbox").val("");
-//           //loadfoldersandnotes();
-//           $("#sidemenu").empty();
-//           console.log(sidebar_content);
-//           $("#sidemenu").append(sidebar_content);
-//         }
-
-// }
-
-// $("#btsearch").click(function () {
-//   console.log("aaaaaaaaaaaaaaaaaaaaaaaaa");
-
-
-/// uncomment code for absolute positioning tweek see top comment in css
-//$('.absolute-wrapper').removeClass('slide-in');
-
-// });
-
-//function loadfoldersandnotesdfolder(a){
-/*var html="";
-$.ajax({
-      type: 'GET',
-      url: '/folders',
-      async:false,
-      success: function(data) {
-        for(var i=0;i<data.length;i++)
-        {
-          //$("#folderList").append('<li class="list-group-item">'+data[i].name+'</li>');
-          html +="<div class='panel panel-default'>";
-          html += "<div class='panel-heading'><h4 class='panel-title'>";
-          html += "<a data-toggle='collapse' data-parent='#accordion' href='#"+data[i].name.replace(' ' ,'_')+"'><span class='glyphicon glyphicon-folder-close'>";
-          html +="</span>"+data[i].name+"<span class='glyphicon glyphicon-trash pull-right' id='"+data[i].id+"' onclick='folderDelete(this)'></span>";
-          html +="</a></h4></div><div id='"+data[i].name.replace(' ' ,'_')+"' class='panel-collapse collapse in'>";
-          html +="<div class='list-group'>";
-          var notelist ="";
-          $.ajax({
-              type: 'GET',
-              url: '/notes/'+data[i].id,
-              async:false,
-              success: function(notes) {
-                //console.log(notes);
-                for(var j =0;j<notes.length;j++)
-                {
-                  html +="<a class='list-group-item' id='"+notes[j].id+"' onclick='delete(this)'>"+notes[j].title+"<span class='glyphicon glyphicon-trash pull-right' aria-hidden='true' id='"+notes[j].id+"' onclick='delete(this)'></span></a>";
-                }
-
-
-              }
-          });
-
-          html +="</div>";
-          html +="</div>";
-          html +="</div>";
-          $("#accordion").empty();
-          $("#accordion").append(html);
-        }*/
-
-/*console.log('div content');
-console.log(html);
-$("#accordion").empty();
-$("#accordion").append(html);*/
-/*      }
-    });
-
-}*/
-/*function loadfoldersandnotes(a){
-  var html="";
-  $.ajax({
-        type: 'GET',
-        url: '/folders',
-        //async:false,
-        success: function(data) {
-
-          for(var i=0;i<data.length;i++)
-          {
-            html += `<li class='panel panel-default' id='dropdown'>
-                     <a data-toggle='collapse' href='#_${data[i].id}' >
-                     <span class='glyphicon glyphicon-user'></span>${data[i].name}<span class='caret'></span></a>
-                     <div id='_${data[i].id}' class='panel-collapse collapse'><div class='panel-body'><ul class='nav navbar-nav'>`;
-
-
-            $.ajax({
-                type: 'GET',
-                url: '/notes/'+data[i].id,
-                async:false,
-                success: function(notes) {
-
-                  for(var j =0;j<notes.length;j++)
-                  {
-                    html+="<li><a href='#' id='"+notes[j].id+"' onclick='delete(this)'>"+notes[j].title+"<span class='glyphicon glyphicon-trash pull-right' aria-hidden='true' id='"+notes[j].id+"' onclick='delete(this)'></span></a></li>";
-                  }
-
-
-                }
-            });
-
-            html+="</ul></div></div></li>";
-            $("#sidemenu").empty();
-            $("#sidemenu").append(html);
-
-          }
-
-          /*console.log('div content');
-          console.log(html);
-          $("#accordion").empty();
-          $("#accordion").append(html);*/
-/*        }
-    });
-
-
-
-}*/
