@@ -73,7 +73,16 @@ socket.on('concurentEditing', function(data) {
 
                 }
 
-            } else { // if a normal character has been it
+            }
+            else if (data.isFormattedContent) { // if the note content has been formatted (bold,underlined,...)
+                $(".note-editable").unbind("DOMNodeInserted"); // disabling the DOMNodeInserted in order to avoid infinite loop
+                $(".note-editable").empty();
+                $(".note-editable").append(data.characterInserted);
+                $(".note-editable").bind("DOMNodeInserted", function(e) { // enable the DOMNodeInserted for next dom modification
+                    formattedContentSave($(".note-editable").html());
+                });
+            }
+             else { // if a normal character has been it
                 if (document.getSelection()) {
                     var selection = document.getSelection();
                     var cursorPos = data.cursorPosition
@@ -84,14 +93,6 @@ socket.on('concurentEditing', function(data) {
                         var oldContent = selection.anchorNode.nodeValue;
                     }
                     var toInsert = data.characterInserted;
-                    // console.log("oldContent", oldContent);
-                    // console.log("cursorPos", cursorPos);
-                    // console.log("oldContent.substring(0, cursorPos)", oldContent.substring(
-                    //     0, cursorPos));
-                    // console.log("oldContent.substring(cursorPos)", oldContent.substring(
-                    //     cursorPos));
-                    // console.log("toInsert", toInsert);
-                    // console.log("newContent", oldContent);
                     var newContent = oldContent.substring(0, cursorPos) + toInsert +
                         oldContent.substring(cursorPos);
                     selection.anchorNode.nodeValue = newContent;
@@ -117,15 +118,11 @@ function save(e) {
         }
 
     } else {
-        //autoSave();
-
+        autoSave();
         if (e.which !== 0 && e.charCode !== 0 && !e.ctrlKey && !e.metaKey && !e.altKey) {
             //alert(String.fromCharCode(e.keyCode|e.charCode));
             var selection = document.getSelection();
             var cursorPos = selection.anchorOffset;
-            //console.log(e);
-            //console.log("key code ",e.keyCode|e.charCode);
-            //console.log('Key is downed:', String.fromCharCode(e.keyCode | e.charCode));
             var editorContent = $(".note-editable").html();
 
             var div = document.createElement("div");
@@ -133,12 +130,9 @@ function save(e) {
             editorContent = div.textContent || div.innerText || "";
             var contentAfterInsertion = editorContent.substr(0, cursorPos) + String.fromCharCode(
                 e.keyCode | e.charCode) + editorContent.substr(cursorPos);
-            //console.log("real content", $(".note-editable").html());
-            //console.log("New text is ", contentAfterInsertion);
-            //console.log(String.fromCharCode(e.keyCode | e.charCode) +
-            //  " inserted at postion " + cursorPos + " in string " + editorContent);
             var data = {
                 isSPecialCharacter: false,
+                isFormattedContent:false,
                 characterInserted: String.fromCharCode(e.keyCode | e.charCode),
                 cursorPosition: cursorPos,
                 noteId: $("[noteid]").attr("noteId"),
@@ -157,15 +151,33 @@ function save(e) {
 }
 
 function specialCharacterSave(specialCharacter, cursorPosition) {
+    autoSave();
     var data = {
         isSPecialCharacter: true,
-        characterInserted: specialCharacter,
-        cursorPosition: cursorPosition,
+        isFormattedContent:false,
+        characterInserted: null,
+        cursorPosition: null,
         noteId: $("[noteid]").attr("noteId"),
         senderId: socket.id,
         roomId: $("[noteid]").attr("noteId")
     };
     socket.emit('concurentEditing', data);
+}
+
+function formattedContentSave(content) {
+    autoSave();
+    var data = {
+        isSPecialCharacter: false,
+        isFormattedContent:true,
+        characterInserted: content,
+        cursorPosition: content,
+        noteId: $("[noteid]").attr("noteId"),
+        senderId: socket.id,
+        roomId: $("[noteid]").attr("noteId")
+    };
+
+    socket.emit('concurentEditing', data);
+
 }
 
 function addChatMessageReceiver(msg) {
@@ -502,6 +514,7 @@ function loadNoteOnEditor(a) {
                 console.log("note owner shared");
                 $("#dSummernote").attr("collaborativeEditing", "true");
                 $("#sharedIcon").show();
+
 
                 if ($(a).attr('right')) {
                     console.log("note shared to another user");

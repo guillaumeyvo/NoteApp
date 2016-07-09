@@ -859,35 +859,19 @@
             //onKeypress : save
          });
 
-        // $(".note-editable").keyup(function( e ) {
-        //   //console.log('Key is downed:', e.key);
-        //   save(e);
-        // });
+        $(".note-editable").bind("DOMNodeInserted", function(e) {
+            formattedContentSave($(".note-editable").html());
+        });
 
         $(".note-editable").keypress(function( e ) {
-          //console.log('Key is downed:', e.key);
-          //console.log("keypress",e);
           save(e);
         }).on('keydown', function(e) {
           switch (e.key) {
-            case "Tab":
-              var selection = document.getSelection();
-              var cursorPos = selection.anchorOffset;
-              var oldContent = selection.anchorNode.nodeValue;
-              var newContent = oldContent.substring(0, cursorPos) + oldContent.substring(cursorPos+1);
-              console.log("Tab key has been hit at position "+cursorPos);
-              specialCharacterSave("Tab",cursorPos);
-              break;
-            case "enter":
-              console.log("enter key has been hit");
-              break;
             case "Backspace":
               var selection = document.getSelection();
               var cursorPos = selection.anchorOffset;
               var oldContent = selection.anchorNode.nodeValue;
               var newContent = oldContent.substring(0, cursorPos-1) + oldContent.substring(cursorPos);
-              // console.log("Backspace key has been hit at position "+cursorPos);
-              // console.log("newContent",newContent);
               specialCharacterSave("Backspace",cursorPos);
               break;
             case "Delete":
@@ -913,13 +897,6 @@
        console.log("content",$(".note-editable").html());
        console.log("inside formatting");
      }
-
-
-
-
-
-
-
       </script>
       <!-- END JAVASCRIPT -->
    </body>
