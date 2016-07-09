@@ -21,6 +21,7 @@ module.exports = function(app, passport) {
     // =====================================
     // HOME PAGE (with login links) ========
     // =====================================
+
     app.get('/', function(req, res) {
         if (req.isAuthenticated()) {
             if (req.user.account_type == "local") {
@@ -34,13 +35,59 @@ module.exports = function(app, passport) {
                     ]
                 }).then(function(data) {
 
+                    db.user.findAll({
+                        where:{
+                            email: {
+                                       $ne:req.user.email
+                                    }
+                            
+                        },
+                        include: [{
+                            model: db.folder,
+                            include:[{
+                                model: db.note,
+                                include:[{
+                                    model:db.shared_note,
+                                    where:{
+                                        receiverEmail:req.user.email,
+                                        id: {
+                                       $ne:null
+                                    }
+                                    }
+                                }]
+                            }
+                                
+                            ]
+                        }]
+                    }).then(function(sharenote){
+
+
+                    console.log("**********************************");
+                    console.log("sharenote");
+                    console.log(sharenote);
+                    console.log("**********************************"); 
+
+
+                    console.log("**********************************");
+                    console.log("data");
+                    console.log(data);
+                    console.log("**********************************");
+
                         res.render('main.ejs', {
                             user: req.user,
                             avatar: req.user.avatar,
                             email: req.user.email,
-                            data: data,
-                            account_type: req.user.account_type
+                            userNote: data,
+                            account_type: req.user.account_type,
+                            sharenote:sharenote
                         });
+
+                        },
+                            function(e){
+
+                        });
+
+
                     },
                     function(e) {
                         console.log("error");
@@ -65,7 +112,7 @@ module.exports = function(app, passport) {
                             user: req.user,
                             avatar: req.user.avatar,
                             email: req.user.email,
-                            data: data,
+                            userNote: data,
                             account_type: req.user.account_type
                         });
                     },
@@ -84,6 +131,78 @@ module.exports = function(app, passport) {
 
         }
 
+    });
+
+
+
+
+
+app.post('/getUserRoomsId', function(req, res) {
+
+       db.shared_note.findAll({
+                        where:{
+                            $or: [{
+                                    receiverEmail: req.body.userEmail
+                                  }, 
+                                  {
+                                    noteOwnerEmail: req.body.userEmail
+                                }]
+                        }
+                    }).then(function(roomId){
+
+
+                     res.send(roomId);
+
+                        },
+                            function(e){
+
+                        });
+    });
+
+
+app.get('/testt', function(req, res) {
+
+ /*   Model.findAll({
+  attributes: { exclude: ['baz'] } $ne: null
+});*/
+
+       db.user.findAll({
+            where:{
+                email: {
+                           $ne:"guillaumeyvo@yahoo.fr"
+                        }
+                
+            },
+            include: [{
+                model: db.folder,
+                include:[{
+                    model: db.note,
+                    include:[{
+                        model:db.shared_note,
+                        where:{
+                            receiverEmail:"guillaumepascal.yvo@ynov.com",
+                            id: {
+                           $ne:null
+                        }
+                        }
+                    }]
+                }
+                    
+                ]
+            }]
+        }).then(function(sharenote){
+
+
+                    console.log("**********************************");
+                    console.log("sharenote");
+                    console.log(sharenote);
+                    console.log("**********************************"); 
+                     res.send(sharenote);
+
+                        },
+                            function(e){
+
+                        });
     });
 
 
@@ -237,6 +356,7 @@ module.exports = function(app, passport) {
     app.post('/signup', passport.authenticate('local-signup', {
         successRedirect: '/signup', // redirect to the secure profile section
         failureRedirect: '/signup', // redirect back to the signup page if there is an error
+        session: false, // prevent passport from creating session object after signing  up
         failureFlash: true // allow flash messages
     }));
 

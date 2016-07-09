@@ -41,7 +41,7 @@ module.exports = function(app, passport) {
 
 
     app.delete('/folderDelete/:id', function(req, res) {
-        var folderId = parseInt(req.params.id, 10);
+        var folderId = req.params.id;
         console.log(folderId);
         db.folder.destroy({
             where: {
@@ -78,7 +78,7 @@ module.exports = function(app, passport) {
 
 
 
-
+    // when new folder is created
     app.post('/folders', function(req, res) {
         console.log(req.body);
         db.folder.create(req.body).then(function(folder) {

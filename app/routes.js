@@ -15,7 +15,6 @@ module.exports = function(app, passport) {
 
 
     app.get('/login', function(req, res) {
-
         // render the page and pass in any flash data if it exists
         res.render('login.ejs', {
             message: req.flash('loginMessage')
@@ -48,7 +47,7 @@ module.exports = function(app, passport) {
     // =====================================
     // show the login form
 
-    app.get('/new', isLoggedIn, function(req, res) {
+    app.get('/new', middleware.isLoggedIn, function(req, res) {
         //     console.log("=============CONTENU DE LA SESSION=================");
         // console.log(req.user);
         // console.log("=============FIN DU CONTENU DE LA SESSION=================");
@@ -63,17 +62,62 @@ module.exports = function(app, passport) {
                     }, // load all pictures
                 ]
             }).then(function(data) {
-                    console.log("$$$$$$$$$$$$$$$$$$$$$$");
-                   console.log(data);
-                   console.log("$$$$$$$$$$$$$$$$$$$$$$");
 
-                    res.render('main.ejs', {
-                        user: req.user,
-                        avatar: req.user.avatar,
-                        email: req.user.email,
-                        data: data,
-                        account_type: req.user.account_type
-                    });
+
+                   db.user.findAll({
+                        where:{
+                            email: {
+                                       $ne:req.user.email
+                                    }
+
+                        },
+                        include: [{
+                            model: db.folder,
+                            include:[{
+                                model: db.note,
+                                include:[{
+                                    model:db.shared_note,
+                                    where:{
+                                        receiverEmail:req.user.email,
+                                        id: {
+                                       $ne:null
+                                    }
+                                    }
+                                }]
+                            }
+
+                            ]
+                        }]
+                    }).then(function(sharenote){
+
+
+                    console.log("**********************************");
+                    console.log("sharenote");
+                    console.log(sharenote);
+                    console.log("**********************************");
+
+
+                    console.log("**********************************");
+                    console.log("data");
+                    console.log(data);
+                    console.log("**********************************");
+
+                        res.render('main.ejs', {
+                            user: req.user,
+                            avatar: req.user.avatar,
+                            email: req.user.email,
+                            userNote: data,
+                            account_type: req.user.account_type,
+                            sharenote:sharenote
+                        });
+
+                        },
+                            function(e){
+
+                        });
+
+
+
                 },
                 function(e) {
                     console.log("error");
@@ -98,7 +142,7 @@ module.exports = function(app, passport) {
                         user: req.user,
                         avatar: req.user.avatar,
                         email: req.user.email,
-                        data: data,
+                        userNote: data,
                         account_type: req.user.account_type
                     });
                 },
@@ -112,6 +156,78 @@ module.exports = function(app, passport) {
     });
 
 
+    app.get('/test', function(req, res) {
+        //     console.log("=============CONTENU DE LA SESSION=================");
+        // console.log(req.user);
+        // console.log("=============FIN DU CONTENU DE LA SESSION=================");
+
+            db.folder.findAll({
+                where: {
+                    userId: 'u6BJJXmllBwsOxGP'
+                },
+                include: [{
+                        model: db.note
+                    }, // load all pictures
+                ]
+            }).then(function(data) {
+
+
+                   db.user.findAll({
+                        where:{
+                            email: {
+                                       $ne:'guillaumeyvo@yahoo.fr'
+                                    }
+
+                        },
+                        include: [{
+                            model: db.folder,
+                            include:[{
+                                model: db.note,
+                                include:[{
+                                    model:db.shared_note,
+                                    where:{
+                                        receiverEmail:'guillaumeyvo@yahoo.fr',
+                                        id: {
+                                       $ne:null
+                                    }
+                                    }
+                                }]
+                            }
+
+                            ]
+                        }]
+                    }).then(function(sharenote){
+
+
+                    console.log("**********************************");
+                    console.log("sharenote");
+                    console.log(sharenote);
+                    console.log("**********************************");
+
+
+                    console.log("**********************************");
+                    console.log("data");
+                    console.log(data);
+                    console.log("**********************************");
+
+                        res.send(sharenote);
+
+                        },
+                            function(e){
+
+                        });
+
+
+
+                },
+                function(e) {
+                    console.log("error");
+                    console.log(e);
+
+                });
+    });
+
+
 
 
 };
@@ -121,7 +237,7 @@ function isLoggedIn(req, res, next) {
     // console.log("=============================");
     // console.log(req);
     // console.log("=============================");
-    // if user is authenticated in the session, carry on 
+    // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         return next();
 
